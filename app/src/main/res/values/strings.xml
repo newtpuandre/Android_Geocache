@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">Android_Geocache</string>
     <string name="title_activity_maps">Map</string>
+
+    <!-- NavBar Strings -->
+    <string name="navbarHeader">Navbar temp text</string>
+    <string name="entry1">entry 1</string>
+    <string name="entry2">entry 2</string>
+    <string name="entry3">entry 3</string>
+    <string name="settings">Settings</string>
+
+
 </resources>
