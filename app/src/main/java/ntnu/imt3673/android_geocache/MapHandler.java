@@ -8,8 +8,23 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class MapHandler  {
     private GoogleMap mMap;
 
+    /**
+     * Constructor
+     * <p>
+     *     Stores the parameter in a local variable mMap.
+     * </p>
+     * @param pMap
+     */
+
     MapHandler(GoogleMap pMap){this.mMap = pMap;}
 
+
+    /**
+     * Load locations
+     * <p>
+     *     Loads locations and places markers on the map.
+     * </p>
+     */
     public void loadLocations(){
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(-34, 151);

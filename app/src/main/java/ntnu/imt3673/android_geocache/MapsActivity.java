@@ -1,5 +1,6 @@
 package ntnu.imt3673.android_geocache;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -53,7 +54,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                         //TODO: Change from toString to something less hardcoded.
                         switch(menuItem.toString()){
-                            case "Settings": Log.d("Android_Geocache", "Settigns checked"); break;
+                            case "Settings":
+                                Intent intent = new Intent(MapsActivity.this, SettingsActivity.class);
+                                startActivity(intent);
+
+                                break;
                         }
                         Log.d("Android_Geocache", "" + menuItem.getItemId());
                         return true;
