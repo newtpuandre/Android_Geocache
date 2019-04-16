@@ -1,8 +1,13 @@
 package ntnu.imt3673.android_geocache;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -17,14 +22,20 @@ import com.google.android.gms.maps.SupportMapFragment;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback{
 
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
     private DrawerLayout drawerLayout;
     private MapHandler gMapsHandler;
     private GoogleMap mMap;
+    private GPSHandler mGPS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        //Check for GPS permissions
+        checkForPermissions();
+        mGPS = new GPSHandler((LocationManager) this.getSystemService(Context.LOCATION_SERVICE));
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -83,6 +94,53 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         gMapsHandler = new MapHandler(googleMap);
         gMapsHandler.loadLocations();
+
+        /*
+        Handler handler = new Handler();
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                Log.d("app1", "" + mGPS.getCurrentLocation());
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mGPS.getCurrentLocation(), 12.0f));
+            }
+        };
+        handler.postDelayed(r, 2500);
+        */
+    }
+
+    /**
+     * Checks For Permissions
+     * <p>
+     * Prompts the user for location permission if it isn't already given.
+     * </p>
+     *
+     */
+    public void checkForPermissions(){
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        //TODO: Handle user declining the permission prompt.
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+            // other 'case' lines to check for other
+            // permissions this app might request.
+        }
     }
 
 }

@@ -15,7 +15,6 @@ public class MapHandler  {
      * </p>
      * @param pMap
      */
-
     MapHandler(GoogleMap pMap){this.mMap = pMap;}
 
 
