@@ -80,6 +80,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 startActivity(intent);
 
                                 break;
+                            case "Test Marker": //Used for debugging
+                                gMapsHandler.testMarker(mGPS.getCurrentLocation());
+                                break;
                         }
                         Log.d("Android_Geocache", "" + menuItem.getItemId());
                         return true;

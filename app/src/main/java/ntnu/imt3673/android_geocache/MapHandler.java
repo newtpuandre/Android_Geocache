@@ -2,7 +2,10 @@ package ntnu.imt3673.android_geocache;
 
 import android.annotation.SuppressLint;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapHandler  {
     private GoogleMap mMap;
@@ -30,6 +33,12 @@ public class MapHandler  {
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
         //mMap.moveCamera();
+    }
+
+    //Debugging only.
+    public void testMarker(LatLng pos){
+        mMap.addMarker(new MarkerOptions().position(pos).title("test Marker"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(pos));
     }
 
 }
