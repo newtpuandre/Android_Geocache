@@ -1,9 +1,8 @@
 package ntnu.imt3673.android_geocache;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
+import android.annotation.SuppressLint;
+
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapHandler  {
     private GoogleMap mMap;
@@ -15,7 +14,8 @@ public class MapHandler  {
      * </p>
      * @param pMap
      */
-    MapHandler(GoogleMap pMap){this.mMap = pMap;}
+    @SuppressLint("MissingPermission")
+    MapHandler(GoogleMap pMap){this.mMap = pMap; mMap.setMyLocationEnabled(true);}
 
 
     /**
@@ -26,9 +26,10 @@ public class MapHandler  {
      */
     public void loadLocations(){
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
+        /*LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
+        //mMap.moveCamera();
     }
 
 }

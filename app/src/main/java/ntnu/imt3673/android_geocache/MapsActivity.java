@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
@@ -16,6 +17,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -28,14 +32,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleMap mMap;
     private GPSHandler mGPS;
 
+    private FusedLocationProviderClient fusedLocationClient;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
         //Check for GPS permissions
         checkForPermissions();
-        mGPS = new GPSHandler((LocationManager) this.getSystemService(Context.LOCATION_SERVICE));
+        mGPS = new GPSHandler(fusedLocationClient);
+
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -95,17 +105,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         gMapsHandler = new MapHandler(googleMap);
         gMapsHandler.loadLocations();
 
-        /*
-        Handler handler = new Handler();
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                Log.d("app1", "" + mGPS.getCurrentLocation());
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mGPS.getCurrentLocation(), 12.0f));
-            }
-        };
-        handler.postDelayed(r, 2500);
-        */
     }
 
     /**

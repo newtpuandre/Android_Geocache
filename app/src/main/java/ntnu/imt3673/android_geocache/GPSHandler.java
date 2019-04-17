@@ -2,15 +2,14 @@ package ntnu.imt3673.android_geocache;
 
 import android.annotation.SuppressLint;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Bundle;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 public class GPSHandler {
 
-    private  LocationListener locListen;
+    private FusedLocationProviderClient fusedLocationClient;
     private double lat; //Latitude
     private double lon; //Longitude
 
@@ -23,25 +22,9 @@ public class GPSHandler {
      * @param pLocation
      */
     @SuppressLint("MissingPermission") //This is fixed with a check in MapsActivity.java.
-    GPSHandler(LocationManager pLocation) {
+    GPSHandler(FusedLocationProviderClient pLocation) {
+        fusedLocationClient = pLocation;
 
-        // Define a listener that responds to location updates
-       locListen = new LocationListener() {
-            public void onLocationChanged(Location location) {
-                // Called when a new location is found by the network location provider.
-
-                lat = location.getLatitude();
-                lon = location.getLongitude();
-            }
-
-            public void onStatusChanged(String provider, int status, Bundle extras) {}
-
-            public void onProviderEnabled(String provider) {}
-
-            public void onProviderDisabled(String provider) {}
-        };
-
-        pLocation.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locListen);
     }
 
     /**
@@ -53,6 +36,19 @@ public class GPSHandler {
      */
     @SuppressLint("MissingPermission")
     public LatLng getCurrentLocation(){
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        // Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            lat = location.getLatitude();
+                            lon = location.getLongitude();
+
+                        }
+                    }
+                });
+
         LatLng temp = new LatLng(lat,lon);
         return temp;
     }
