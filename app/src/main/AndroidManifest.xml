@@ -18,7 +18,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".AddMessageActivity"></activity>
+        <activity
+            android:name=".AddMessageActivity"
+            android:label="Add a Message" />
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />
