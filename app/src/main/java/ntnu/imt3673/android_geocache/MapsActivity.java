@@ -1,12 +1,12 @@
 package ntnu.imt3673.android_geocache;
 
 import android.Manifest;
-import android.content.Context;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.LocationManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
@@ -19,7 +19,6 @@ import android.view.MenuItem;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -80,8 +79,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 startActivity(intent);
 
                                 break;
-                            case "Test Marker": //Used for debugging
-                                gMapsHandler.testMarker(mGPS.getCurrentLocation());
+                            case "Add a message": //Used for debugging
+                                Intent addMsgIntent = new Intent(MapsActivity.this, AddMessageActivity.class);
+                                startActivity(addMsgIntent);
+
+
                                 break;
                         }
                         Log.d("Android_Geocache", "" + menuItem.getItemId());
@@ -144,5 +146,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             // permissions this app might request.
         }
     }
+
+
 
 }

@@ -4,7 +4,7 @@
 
     <!-- NavBar Strings -->
     <string name="navbarHeader">Navbar temp text</string>
-    <string name="testMarker">Test Marker</string>
+    <string name="addMessage">Add a message</string>
     <string name="entry2">entry 2</string>
     <string name="entry3">entry 3</string>
     <string name="settings">Settings</string>
