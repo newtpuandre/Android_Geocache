@@ -1,11 +1,8 @@
 package ntnu.imt3673.android_geocache;
 
 import android.Manifest;
-import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -23,6 +20,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 
+import ntnu.imt3673.android_geocache.data.LoginDataSource;
+import ntnu.imt3673.android_geocache.data.LoginRepository;
+import ntnu.imt3673.android_geocache.ui.login.LoginActivity;
+
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback{
 
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
@@ -31,6 +32,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleMap mMap;
     private GPSHandler mGPS;
 
+
+    private LoginRepository loginRepo;
+    private LoginDataSource loginData;
+
     private FusedLocationProviderClient fusedLocationClient;
 
 
@@ -38,6 +43,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        //Login setup
+        loginData = new LoginDataSource();
+        loginRepo = LoginRepository.getInstance(loginData);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -79,17 +88,26 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 startActivity(intent);
 
                                 break;
-                            case "Add a message": //Used for debugging
+                            case "Add a message":
                                 Intent addMsgIntent = new Intent(MapsActivity.this, AddMessageActivity.class);
                                 startActivity(addMsgIntent);
+                                break;
 
-
+                            case "My profile":
+                                Intent myProfile = new Intent(MapsActivity.this, UserProfileActivity.class);
+                                startActivity(myProfile);
                                 break;
                         }
                         Log.d("Android_Geocache", "" + menuItem.getItemId());
                         return true;
                     }
                 });
+
+        //Check if user is logged in.
+       /* if(!loginRepo.isLoggedIn()){
+            Intent i = new Intent(this, LoginActivity.class);
+            startActivity(i);
+        }*/
 
     }
 

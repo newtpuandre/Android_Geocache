@@ -7,7 +7,8 @@
             android:title="@string/addMessage" />
         <item
             android:id="@+id/nav_gallery"
-            android:title="@string/entry2" />
+            android:icon="@drawable/ic_person"
+            android:title="@string/myProfile" />
         <item
             android:id="@+id/nav_slideshow"
             android:title="@string/entry3" />

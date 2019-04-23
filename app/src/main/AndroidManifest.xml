@@ -19,11 +19,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity
+            android:name=".ui.login.LoginActivity"
+            android:label="@string/title_activity_login" />
+        <activity
             android:name=".AddMessageActivity"
             android:label="Add a Message" />
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />
+        <activity
+            android:name=".UserProfileActivity"
+            android:label="My profile"/>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
