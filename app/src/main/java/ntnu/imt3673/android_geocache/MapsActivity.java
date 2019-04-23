@@ -19,18 +19,24 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Marker;
 
 import ntnu.imt3673.android_geocache.data.LoginDataSource;
 import ntnu.imt3673.android_geocache.data.LoginRepository;
 import ntnu.imt3673.android_geocache.ui.login.LoginActivity;
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback{
+
+
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
+
+    static final int ADD_MESSAGE_REQUEST = 0;
 
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
     private DrawerLayout drawerLayout;
     private MapHandler gMapsHandler;
-    private GoogleMap mMap;
-    private GPSHandler mGPS;
+
+    public GoogleMap mMap;
+    public GPSHandler mGPS;
 
 
     private LoginRepository loginRepo;
@@ -54,6 +60,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         checkForPermissions();
         mGPS = new GPSHandler(fusedLocationClient);
 
+        //Prime the gps. (First always return 0,0)
+        mGPS.getCurrentLocation();
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -90,7 +98,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 break;
                             case "Add a message":
                                 Intent addMsgIntent = new Intent(MapsActivity.this, AddMessageActivity.class);
-                                startActivity(addMsgIntent);
+                                startActivityForResult(addMsgIntent,ADD_MESSAGE_REQUEST);
                                 break;
 
                             case "My profile":
@@ -112,6 +120,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch(requestCode) {
+            case ADD_MESSAGE_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    String ret = data.getStringExtra("message");
+                    gMapsHandler.addLocation(ret, mGPS.getCurrentLocation());
+
+                }
+                break;
+        }
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -124,11 +145,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
         gMapsHandler = new MapHandler(googleMap);
         gMapsHandler.loadLocations();
-
     }
+
 
     /**
      * Checks For Permissions

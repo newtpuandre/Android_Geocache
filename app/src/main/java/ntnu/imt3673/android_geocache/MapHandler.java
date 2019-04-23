@@ -5,20 +5,33 @@ import android.annotation.SuppressLint;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapHandler  {
+import java.util.ArrayList;
+
+public class MapHandler {
     private GoogleMap mMap;
+
+    private ArrayList<Marker> markers;
 
     /**
      * Constructor
      * <p>
      *     Stores the parameter in a local variable mMap.
+     *     Enables user blip on map
+     *     Initialize ArrayList
      * </p>
      * @param pMap
      */
     @SuppressLint("MissingPermission")
-    MapHandler(GoogleMap pMap){this.mMap = pMap; mMap.setMyLocationEnabled(true);}
+    MapHandler(GoogleMap pMap){
+        this.mMap = pMap;
+    mMap.setMyLocationEnabled(true);
+    markers = new ArrayList<>();
+
+
+    }
 
 
     /**
@@ -28,17 +41,35 @@ public class MapHandler  {
      * </p>
      */
     public void loadLocations(){
-        // Add a marker in Sydney and move the camera
-        /*LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
-        //mMap.moveCamera();
+        /*Pseudo code
+        Load markers from db into markers array.
+        Loop over array and check which are supposed to be loaded (by radius)
+        Show those
+        Hide those who are outside of the radius
+
+        Calculation
+        https://stackoverflow.com/questions/15372705/calculating-a-radius-with-longitude-and-latitude
+        */
     }
 
-    //Debugging only.
-    public void testMarker(LatLng pos){
-        mMap.addMarker(new MarkerOptions().position(pos).title("test Marker"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(pos));
+    /**
+     * Add location
+     * <p>
+     *     Adds location to the map and to the database.
+     * </p>
+     * @param message
+     * @param pos
+     */
+
+    public void addLocation(String message, LatLng pos){
+        Marker t;
+        t = mMap.addMarker(new MarkerOptions().position(pos).title(message));
+        markers.add(t);
+        //Add to database.
+    }
+
+    public void moveToUser(LatLng pos) {
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, 14.0f));
     }
 
 }

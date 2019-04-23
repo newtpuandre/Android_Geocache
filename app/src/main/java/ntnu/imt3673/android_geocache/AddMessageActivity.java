@@ -1,5 +1,7 @@
 package ntnu.imt3673.android_geocache;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,13 +10,17 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 public class AddMessageActivity extends AppCompatActivity {
+    private TextView message;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_message);
+
+        message = findViewById(R.id.message_txt);
 
         Button addMsg = findViewById(R.id.addMsgBtn);
 
@@ -25,7 +31,12 @@ public class AddMessageActivity extends AppCompatActivity {
 
         addMsg.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Log.d("app1", "kjomis");
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("message", message.getText().toString());
+                Log.d("app1", message.getText().toString());
+                setResult(Activity.RESULT_OK, returnIntent);
+                finish();
+                //Add to database.
 
 
             }

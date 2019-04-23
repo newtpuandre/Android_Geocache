@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.location.Location;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 
@@ -24,7 +25,6 @@ public class GPSHandler {
     @SuppressLint("MissingPermission") //This is fixed with a check in MapsActivity.java.
     GPSHandler(FusedLocationProviderClient pLocation) {
         fusedLocationClient = pLocation;
-
     }
 
     /**
@@ -48,7 +48,6 @@ public class GPSHandler {
                         }
                     }
                 });
-
         LatLng temp = new LatLng(lat,lon);
         return temp;
     }
