@@ -35,6 +35,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private DrawerLayout drawerLayout;
     private MapHandler gMapsHandler;
 
+    private SettingsHandler mSettingsHandler;
+
     public GoogleMap mMap;
     public GPSHandler mGPS;
 
@@ -57,6 +59,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         //Prime the gps. (First always return 0,0)
         mGPS.getCurrentLocation();
+
+        mSettingsHandler = new SettingsHandler(this.getApplicationContext());
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -143,6 +147,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         gMapsHandler = new MapHandler(googleMap, mGPS);
         gMapsHandler.loadLocations();
         gMapsHandler.moveToUser();
+
     }
 
 
