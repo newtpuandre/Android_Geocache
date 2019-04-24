@@ -19,8 +19,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import ntnu.imt3673.android_geocache.R;
-import ntnu.imt3673.android_geocache.ui.login.LoginViewModel;
-import ntnu.imt3673.android_geocache.ui.login.LoginViewModelFactory;
 
 public class LoginActivity extends AppCompatActivity {
 
