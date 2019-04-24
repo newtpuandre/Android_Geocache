@@ -3,6 +3,7 @@ package ntnu.imt3673.android_geocache;
 import android.annotation.SuppressLint;
 import android.location.Location;
 import android.location.LocationManager;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -32,10 +33,21 @@ public class GPSHandler {
      */
     @SuppressLint("MissingPermission")
     public LatLng getCurrentLocation(){
-        String locationProvider = LocationManager.NETWORK_PROVIDER;
-        Location lastKnownLocation = locManager.getLastKnownLocation(locationProvider);
-        LatLng temp = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-        return temp;
+        String locationProviderNetwork = LocationManager.NETWORK_PROVIDER;
+        String locationProviderGPS = LocationManager.GPS_PROVIDER;
+
+        Location lastKnownLocationNetwork = locManager.getLastKnownLocation(locationProviderNetwork);
+        Location lastKnownLocationGPS = locManager.getLastKnownLocation(locationProviderGPS);
+
+        LatLng ret;
+
+        if (lastKnownLocationNetwork == null) { //Network Unavailable, Use GPS
+            ret = new LatLng(lastKnownLocationGPS.getLatitude(), lastKnownLocationGPS.getLongitude());
+        } else { //Network Available
+            ret = new LatLng(lastKnownLocationNetwork.getLatitude(), lastKnownLocationNetwork.getLongitude());
+        }
+
+        return ret;
     }
 
 
