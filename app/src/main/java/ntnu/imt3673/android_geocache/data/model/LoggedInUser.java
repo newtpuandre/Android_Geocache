@@ -15,6 +15,7 @@ public class LoggedInUser implements Parcelable {
     private String displayName;
 
     private int distanceWalked; //In Kilometers
+    private int cachesFound;
 
     private Map<String,Boolean> myAchievements;
 
@@ -22,13 +23,15 @@ public class LoggedInUser implements Parcelable {
         this.userId = userId;
         this.displayName = displayName;
         this.myAchievements = new HashMap<>();
+        //this.cachesFound =
     }
 
     protected LoggedInUser(Parcel in) {
-        userId = in.readString();
-        displayName = in.readString();
-        distanceWalked = in.readInt();
-        myAchievements = in.readHashMap(this.getClass().getClassLoader());
+        this.userId = in.readString();
+        this.displayName = in.readString();
+        this.distanceWalked = in.readInt();
+        this.myAchievements = in.readHashMap(this.getClass().getClassLoader());
+        this.cachesFound = in.readInt();
     }
 
 
@@ -62,6 +65,7 @@ public class LoggedInUser implements Parcelable {
         dest.writeString(this.userId);
         dest.writeString(this.displayName);
         dest.writeInt(this.distanceWalked);
-        dest.writeMap(myAchievements);
+        dest.writeMap(this.myAchievements);
+        dest.writeInt(this.cachesFound);
     }
 }

@@ -25,6 +25,7 @@ public class UserProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
 
+        //Debug data
         ArrayList<String> test = new ArrayList<>();
         test.add("Test 1");
         test.add("Test 2");
@@ -33,8 +34,6 @@ public class UserProfileActivity extends AppCompatActivity {
         test.add("Test 5");
         test.add("Test 6");
         test.add("Test 7");
-
-
 
         recyclerView = findViewById(R.id.my_recycler_view);
 
