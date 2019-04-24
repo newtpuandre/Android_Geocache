@@ -114,6 +114,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             startActivity(i);
         }
 
+        //TODO: Make sure user is logged in before we proceed with ANYTHING
     }
 
     @Override

@@ -98,12 +98,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     public void onBackPressed() {
         closeActivity();
     }
-/*
-        Intent returnIntent = new Intent();
-        setResult(Activity.RESULT_OK, returnIntent);
-        Log.d("app1", "visluttet 2");
-        finish();
- */
 
     /**
      * Set up the {@link android.app.ActionBar}, if the API is available.
