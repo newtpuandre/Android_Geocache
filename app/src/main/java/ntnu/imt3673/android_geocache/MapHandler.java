@@ -26,11 +26,13 @@ public class MapHandler {
     /**
      * Constructor
      * <p>
-     *     Stores the parameter in a local variable mMap.
-     *     Enables user blip on map
-     *     Initialize ArrayList
+     *     Stores the parameter pMap in a local variable mMap.
+     *     Store the parameter pGps in a local variable mGps.
+     *     Enables user blip on map.
+     *     Initialize ArrayList.
      * </p>
      * @param pMap
+     * @param pGps
      */
     @SuppressLint("MissingPermission")
     MapHandler(GoogleMap pMap, GPSHandler pGps){
@@ -47,6 +49,7 @@ public class MapHandler {
      * Load locations
      * <p>
      *     Loads locations and places markers on the map.
+     *
      * </p>
      */
     public void loadLocations(){
@@ -69,36 +72,56 @@ public class MapHandler {
         t = mMap.addMarker(new MarkerOptions().position(loc).title("Test point 3"));
         markers.add(t);
 
+
+        updateMarkers();
+        /*Pseudo code
+        Load markers from db into markers array.
+        Loop over array and check which are supposed to be loaded (by radius) Use function updateMarkers
+        */
+    }
+
+    /**
+     * Update markers
+     * <p>
+     *     Update markers based on a new location provided by the GPS.
+     * </p>
+     */
+    public void updateMarkers(){
         //Get current position
         LatLng mypos = mGps.getCurrentLocation();
         Log.d("app1", mypos.toString());
-
 
         for(int i = 0; i < markers.size(); i++) {
             Marker tempMarker = markers.get(i);
             double distance = greatCircleInMeters(mypos, tempMarker.getPosition());
             Log.d("app1", "" + distance);
-            if (distance >= 250) {
+            if (distance >= SettingsHandler.returnSearchRadius()) {
                 tempMarker.setVisible(false);
+            } else {
+                tempMarker.setVisible(true);
             }
         }
-
-        /*Pseudo code
-        Load markers from db into markers array.
-        Loop over array and check which are supposed to be loaded (by radius)
-        Show those
-        Hide those who are outside of the radius
-
-        Calculation
-        https://stackoverflow.com/questions/15372705/calculating-a-radius-with-longitude-and-latitude
-        */
     }
 
+    /**
+     * Calculate distance between points in meters
+     * @param latLng1
+     * @param latLng2
+     * @return
+     */
     public double greatCircleInMeters(LatLng latLng1, LatLng latLng2) {
         return greatCircleInKilometers(latLng1.latitude, latLng1.longitude, latLng2.latitude,
                 latLng2.longitude) * 1000;
     }
 
+    /**
+     * Calculate distance between points in kilometers
+     * @param lat1
+     * @param long1
+     * @param lat2
+     * @param long2
+     * @return
+     */
     public double greatCircleInKilometers(double lat1, double long1, double lat2, double long2) {
         double phi1 = lat1 * PI_RAD;
         double phi2 = lat2 * PI_RAD;
@@ -124,6 +147,12 @@ public class MapHandler {
         //Add to database.
     }
 
+    /**
+     * Move camera to users
+     * <p>
+     *     Moves the camera to the users coordinates and zoom in.
+     * </p>
+     */
     public void moveToUser() {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mGps.getCurrentLocation(), 14.0f));
     }

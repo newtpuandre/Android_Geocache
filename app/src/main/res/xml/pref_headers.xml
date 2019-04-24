@@ -3,7 +3,7 @@
     <!-- These settings headers are only used on tablets. -->
 
     <header
-        android:fragment="ntnu.imt3673.android_geocache.SettingsActivity$GeneralPreferenceFragment"
+        android:fragment="ntnu.imt3673.android_geocache.SettingsActivity$MapPreferenceFragment"
         android:icon="@drawable/ic_info_black_24dp"
         android:title="@string/pref_header_map" />
 

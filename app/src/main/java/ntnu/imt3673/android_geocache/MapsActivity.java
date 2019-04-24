@@ -3,6 +3,7 @@ package ntnu.imt3673.android_geocache;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -16,16 +17,12 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.Marker;
 
 import ntnu.imt3673.android_geocache.data.LoginDataSource;
 import ntnu.imt3673.android_geocache.data.LoginRepository;
-import ntnu.imt3673.android_geocache.ui.login.LoginActivity;
 
 
 
@@ -44,9 +41,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private LoginRepository loginRepo;
     private LoginDataSource loginData;
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
