@@ -22,4 +22,9 @@
         android:icon="@drawable/ic_info_black_24dp"
         android:title="About" />
 
+    <header
+        android:icon="@drawable/ic_exit_to_app_button"
+        android:title="Sign out"
+        />
+
 </preference-headers>
