@@ -1,23 +1,21 @@
 package ntnu.imt3673.android_geocache;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.preference.SeekBarPreference;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -96,6 +94,17 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         layout.setPadding(horizontalMargin, topMargin, horizontalMargin, verticalMargin);
     }
 
+    @Override
+    public void onBackPressed() {
+        closeActivity();
+    }
+/*
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK, returnIntent);
+        Log.d("app1", "visluttet 2");
+        finish();
+ */
+
     /**
      * Set up the {@link android.app.ActionBar}, if the API is available.
      */
@@ -105,6 +114,30 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // Show the Up button in the action bar.
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            closeActivity();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Closes the settings activity
+     * <p>
+     *     The user may or may not have updated various settings
+     *     For the rest of the program to know if changes were made
+     *     we need to send something back to MapsActivity
+     * </p>
+     */
+    private void closeActivity(){
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK, returnIntent);
+        finish();
     }
 
     /**

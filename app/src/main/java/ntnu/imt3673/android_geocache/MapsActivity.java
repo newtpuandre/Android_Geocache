@@ -3,7 +3,6 @@ package ntnu.imt3673.android_geocache;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -29,6 +28,7 @@ import ntnu.imt3673.android_geocache.data.LoginRepository;
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     static final int ADD_MESSAGE_REQUEST = 0;
+    static final int SETTINGS_MENU = 1;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
 
 
@@ -89,7 +89,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         switch(menuItem.toString()){
                             case "Settings":
                                 Intent intent = new Intent(MapsActivity.this, SettingsActivity.class);
-                                startActivity(intent);
+                                startActivityForResult(intent, SETTINGS_MENU);
 
                                 break;
                             case "Add a message":
@@ -121,6 +121,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if (resultCode == RESULT_OK) {
                     String ret = data.getStringExtra("message");
                     gMapsHandler.addLocation(ret, mGPS.getCurrentLocation());
+                }
+                break;
+            case SETTINGS_MENU:
+                //TODO: Only update stuff if things were changed.
+                if (resultCode == RESULT_OK) {
+                    gMapsHandler.updateMarkers();
                 }
                 break;
         }

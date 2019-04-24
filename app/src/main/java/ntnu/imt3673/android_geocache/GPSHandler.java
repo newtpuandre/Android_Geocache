@@ -1,14 +1,10 @@
 package ntnu.imt3673.android_geocache;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 public class GPSHandler {
 
