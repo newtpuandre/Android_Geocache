@@ -22,7 +22,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 
 import ntnu.imt3673.android_geocache.data.LoginDataSource;
 import ntnu.imt3673.android_geocache.data.LoginRepository;
-
+import ntnu.imt3673.android_geocache.data.model.LoggedInUser;
+import ntnu.imt3673.android_geocache.ui.login.LoginActivity;
 
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -99,6 +100,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                             case "My profile":
                                 Intent myProfile = new Intent(MapsActivity.this, UserProfileActivity.class);
+                                myProfile.putExtra("user", loginRepo.returnUser());
                                 startActivity(myProfile);
                                 break;
                         }
@@ -106,11 +108,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }
                 });
 
-        //Check if user is logged in.
-       /* if(!loginRepo.isLoggedIn()){
+        // Check if user is logged in.
+        if(!loginRepo.isLoggedIn()){
             Intent i = new Intent(this, LoginActivity.class);
             startActivity(i);
-        }*/
+        }
 
     }
 

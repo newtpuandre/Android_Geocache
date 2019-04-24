@@ -4,9 +4,15 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
+import android.widget.TextView;
+
+import ntnu.imt3673.android_geocache.data.model.LoggedInUser;
 
 public class UserProfileActivity extends AppCompatActivity {
+
+    private TextView username_lbl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,6 +23,12 @@ public class UserProfileActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
+
+        Bundle data = getIntent().getExtras();
+        LoggedInUser user = data.getParcelable("user");
+
+        username_lbl = findViewById(R.id.username_lbl);
+        username_lbl.setText(user.getDisplayName());
     }
 
     @Override
