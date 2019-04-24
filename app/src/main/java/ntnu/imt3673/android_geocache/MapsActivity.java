@@ -1,8 +1,10 @@
 package ntnu.imt3673.android_geocache;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -30,8 +32,9 @@ import ntnu.imt3673.android_geocache.ui.login.LoginActivity;
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     static final int ADD_MESSAGE_REQUEST = 0;
-
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
+
+
     private DrawerLayout drawerLayout;
     private MapHandler gMapsHandler;
 
@@ -42,7 +45,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LoginRepository loginRepo;
     private LoginDataSource loginData;
 
-    private FusedLocationProviderClient fusedLocationClient;
+
 
 
     @Override
@@ -54,11 +57,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         loginData = new LoginDataSource();
         loginRepo = LoginRepository.getInstance(loginData);
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
         //Check for GPS permissions
         checkForPermissions();
-        mGPS = new GPSHandler(fusedLocationClient);
+        mGPS = new GPSHandler((LocationManager) this.getSystemService(Context.LOCATION_SERVICE));
 
         //Prime the gps. (First always return 0,0)
         mGPS.getCurrentLocation();
@@ -145,8 +146,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        gMapsHandler = new MapHandler(googleMap);
+        gMapsHandler = new MapHandler(googleMap, mGPS);
         gMapsHandler.loadLocations();
+        gMapsHandler.moveToUser();
     }
 
 

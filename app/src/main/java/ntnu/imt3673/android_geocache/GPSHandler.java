@@ -1,7 +1,9 @@
 package ntnu.imt3673.android_geocache;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.location.Location;
+import android.location.LocationManager;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
@@ -10,9 +12,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 public class GPSHandler {
 
-    private FusedLocationProviderClient fusedLocationClient;
-    private double lat; //Latitude
-    private double lon; //Longitude
+    private LocationManager locManager;
 
     /**
      * Constructor
@@ -20,11 +20,11 @@ public class GPSHandler {
      *     Takes LocationManager as a parameter and starts fetching
      *     coordinates.
      * </p>
-     * @param pLocation
+     *
      */
     @SuppressLint("MissingPermission") //This is fixed with a check in MapsActivity.java.
-    GPSHandler(FusedLocationProviderClient pLocation) {
-        fusedLocationClient = pLocation;
+    GPSHandler(LocationManager pLocManager) {
+        this.locManager = pLocManager;
     }
 
     /**
@@ -36,19 +36,9 @@ public class GPSHandler {
      */
     @SuppressLint("MissingPermission")
     public LatLng getCurrentLocation(){
-        fusedLocationClient.getLastLocation()
-                .addOnSuccessListener(new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // Got last known location. In some rare situations this can be null.
-                        if (location != null) {
-                            lat = location.getLatitude();
-                            lon = location.getLongitude();
-
-                        }
-                    }
-                });
-        LatLng temp = new LatLng(lat,lon);
+        String locationProvider = LocationManager.NETWORK_PROVIDER;
+        Location lastKnownLocation = locManager.getLastKnownLocation(locationProvider);
+        LatLng temp = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
         return temp;
     }
 
