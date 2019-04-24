@@ -57,9 +57,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         checkForPermissions();
         mGPS = new GPSHandler((LocationManager) this.getSystemService(Context.LOCATION_SERVICE));
 
-        //Prime the gps. (First always return 0,0)
-        mGPS.getCurrentLocation();
-
         mSettingsHandler = new SettingsHandler(this.getApplicationContext());
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -105,7 +102,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 startActivity(myProfile);
                                 break;
                         }
-                        Log.d("Android_Geocache", "" + menuItem.getItemId());
                         return true;
                     }
                 });
@@ -125,7 +121,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if (resultCode == RESULT_OK) {
                     String ret = data.getStringExtra("message");
                     gMapsHandler.addLocation(ret, mGPS.getCurrentLocation());
-
                 }
                 break;
         }

@@ -11,6 +11,7 @@ public class SettingsHandler {
     private static int SEARCH_RADIUS = 250;
 
     public SettingsHandler(Context context){
+
         //Setup preferences
         sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
         //Grab search radius and save it
