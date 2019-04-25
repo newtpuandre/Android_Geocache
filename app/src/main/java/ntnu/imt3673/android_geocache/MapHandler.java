@@ -11,23 +11,28 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
+import ntnu.imt3673.android_geocache.data.model.LoggedInUser;
+
 import static java.lang.Math.acos;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
-public class MapHandler {
+public class MapHandler{
     static double PI_RAD = Math.PI / 180.0;
 
     private GoogleMap mMap;
     private GPSHandler mGps;
+    private LoggedInUser user;
 
     private ArrayList<Marker> markers;
+    private ArrayList<LatLng> visitedMarkers;
 
     /**
      * Constructor
      * <p>
      *     Stores the parameter pMap in a local variable mMap.
      *     Store the parameter pGps in a local variable mGps.
+     *     Stores the parameter pUser in a local variable user.
      *     Enables user blip on map.
      *     Initialize ArrayList.
      * </p>
@@ -41,6 +46,10 @@ public class MapHandler {
         mMap.setMyLocationEnabled(true);
         markers = new ArrayList<>();
 
+        //Visited markers should be loaded from DB with users visited caches
+        //Might have to be loaded in the function call onMarkerClick if arraylist is empty
+        //to prevent crash
+        visitedMarkers = new ArrayList<>();
 
     }
 
@@ -80,6 +89,7 @@ public class MapHandler {
         */
     }
 
+
     /**
      * Update markers
      * <p>
@@ -101,6 +111,35 @@ public class MapHandler {
                 tempMarker.setVisible(true);
             }
         }
+    }
+
+    public boolean onMarkerClick(Marker marker, LoggedInUser user) {
+        if ( visitedMarkers.size() == 0) {
+            LatLng temp = marker.getPosition();
+            visitedMarkers.add(temp);
+            user.updateCaches(1);
+            return false;
+        }
+
+        boolean found = false;
+
+        for (int i = 0; i < visitedMarkers.size(); i++) {
+            LatLng markerpos = marker.getPosition();
+            LatLng loopMark = visitedMarkers.get(i);
+
+            if (loopMark.longitude == markerpos.longitude
+                    && loopMark.latitude == markerpos.latitude) {
+                found = true;
+            }
+        }
+
+        if (!found) {
+            visitedMarkers.add(marker.getPosition());
+            user.updateCaches(1);
+        }
+
+
+        return false;
     }
 
     /**

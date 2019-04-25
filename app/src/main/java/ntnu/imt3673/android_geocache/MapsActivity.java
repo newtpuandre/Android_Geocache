@@ -18,6 +18,8 @@ import android.view.MenuItem;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 
 import ntnu.imt3673.android_geocache.data.LoginDataSource;
 import ntnu.imt3673.android_geocache.data.LoginRepository;
@@ -113,6 +115,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         //TODO: Make sure user is logged in before we proceed with ANYTHING
+
     }
 
     @Override
@@ -150,7 +153,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         gMapsHandler.loadLocations();
         gMapsHandler.moveToUser();
 
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                gMapsHandler.onMarkerClick(marker, loginRepo.returnUser());
+                return false;
+            }
+        });
+
     }
+
+
 
 
     /**
