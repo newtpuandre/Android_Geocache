@@ -17,12 +17,19 @@ public class LoggedInUser implements Parcelable {
     private int distanceWalked; //In Kilometers
     private int cachesFound;
 
-    private Map<String,Boolean> myAchievements;
+    //Contains achievement ID (Integer) and True/false if it is unlocked (Bool)
+    private Map<Integer,Boolean> myAchievements;
 
     public LoggedInUser(String userId, String displayName) {
         this.userId = userId;
         this.displayName = displayName;
         this.myAchievements = new HashMap<>();
+
+        //Load achievement data from DB
+        //Dummy data right now.
+        this.myAchievements.put(0, true);
+        this.myAchievements.put(2, true);
+
         //this.cachesFound =
     }
 
@@ -41,6 +48,10 @@ public class LoggedInUser implements Parcelable {
 
     public String getDisplayName() {
         return displayName;
+    }
+
+    public Map<Integer, Boolean> getMyAchievements(){
+        return this.myAchievements;
     }
 
     public static final Creator<LoggedInUser> CREATOR = new Creator<LoggedInUser>() {

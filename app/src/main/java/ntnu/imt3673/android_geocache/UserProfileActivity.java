@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import ntnu.imt3673.android_geocache.data.model.LoggedInUser;
 
@@ -19,21 +20,19 @@ public class UserProfileActivity extends AppCompatActivity {
 
     private TextView username_lbl;
     private RecyclerView recyclerView;
+    private ArrayList<Achievement> test;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
 
+        Bundle data = getIntent().getExtras();
+        LoggedInUser user = data.getParcelable("user");
+
         //Debug data
-        ArrayList<String> test = new ArrayList<>();
-        test.add("Test 1");
-        test.add("Test 2");
-        test.add("Test 3");
-        test.add("Test 4");
-        test.add("Test 5");
-        test.add("Test 6");
-        test.add("Test 7");
+        this.test = AchievementHandler.returnAchievementList();
+        setAchievementStatus(user);
 
         recyclerView = findViewById(R.id.my_recycler_view);
 
@@ -49,9 +48,6 @@ public class UserProfileActivity extends AppCompatActivity {
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
 
-        Bundle data = getIntent().getExtras();
-        LoggedInUser user = data.getParcelable("user");
-
         username_lbl = findViewById(R.id.username_lbl);
         username_lbl.setText(user.getDisplayName());
     }
@@ -66,4 +62,21 @@ public class UserProfileActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    private void setAchievementStatus(LoggedInUser pUser){
+        //Loop over map and find all unlocked achievements.
+        //Set them unlocked and show them as unlocked in the userprofile
+
+        Map<Integer,Boolean> temp = pUser.getMyAchievements();
+        for (Map.Entry<Integer,Boolean> entry : temp.entrySet()) {
+            int id = entry.getKey();
+            test.get(entry.getKey()).setUnlocked(true);
+        }
+
+
+    }
+
+    /*
+
+     */
 }
