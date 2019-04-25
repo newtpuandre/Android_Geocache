@@ -18,7 +18,7 @@ import ntnu.imt3673.android_geocache.data.model.LoggedInUser;
 
 public class UserProfileActivity extends AppCompatActivity {
 
-    private TextView username_lbl;
+    private TextView username_lbl, cachesfound_num, distancewalked_num;
     private RecyclerView recyclerView;
     private ArrayList<Achievement> test;
 
@@ -30,7 +30,7 @@ public class UserProfileActivity extends AppCompatActivity {
         Bundle data = getIntent().getExtras();
         LoggedInUser user = data.getParcelable("user");
 
-        //Debug data
+
         this.test = AchievementHandler.returnAchievementList();
         setAchievementStatus(user);
 
@@ -50,6 +50,12 @@ public class UserProfileActivity extends AppCompatActivity {
 
         username_lbl = findViewById(R.id.username_lbl);
         username_lbl.setText(user.getDisplayName());
+
+        cachesfound_num = findViewById(R.id.cachefound_num);
+        cachesfound_num.setText(user.getCachesFound());
+
+        distancewalked_num = findViewById(R.id.distancewalked_num);
+        distancewalked_num.setText(user.getDistanceWalked() + " Kilometers");
     }
 
     @Override
@@ -70,13 +76,14 @@ public class UserProfileActivity extends AppCompatActivity {
         Map<Integer,Boolean> temp = pUser.getMyAchievements();
         for (Map.Entry<Integer,Boolean> entry : temp.entrySet()) {
             int id = entry.getKey();
-            test.get(entry.getKey()).setUnlocked(true);
+            for(int i = 0; i < test.size(); i++ ){
+                if (test.get(i).getId() == id) {
+                    test.get(i).setUnlocked(true);
+                }
+            }
         }
 
 
     }
 
-    /*
-
-     */
 }

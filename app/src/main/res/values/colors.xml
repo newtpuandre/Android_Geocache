@@ -15,4 +15,5 @@
     <color name="black">#000000</color>
     <color name="achievement_locked">#F6A1A1</color>
     <color name="achievement_unlocked">#8EC48A</color>
+    <color name="achievementbg">#9E9E9E</color>
 </resources>

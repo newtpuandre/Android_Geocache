@@ -2,9 +2,13 @@ package ntnu.imt3673.android_geocache.data.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import ntnu.imt3673.android_geocache.AchievementHandler;
 
 /**
  * Data class that captures user information for logged in users retrieved from LoginRepository
@@ -27,10 +31,15 @@ public class LoggedInUser implements Parcelable {
 
         //Load achievement data from DB
         //Dummy data right now.
-        this.myAchievements.put(0, true);
-        this.myAchievements.put(2, true);
+        //this.myAchievements.put(0, true);
+        //this.myAchievements.put(2, true);
 
-        //this.cachesFound =
+        //Load this data from DB
+        this.cachesFound = 0;
+        this.distanceWalked = 0;
+
+        this.updateCaches(34);
+        this.updateDistance(52);
     }
 
     protected LoggedInUser(Parcel in) {
@@ -50,8 +59,52 @@ public class LoggedInUser implements Parcelable {
         return displayName;
     }
 
+    public String getCachesFound(){
+        return String.valueOf(this.cachesFound);
+    }
+
+    public String getDistanceWalked(){
+        return String.valueOf(this.distanceWalked);
+    }
+
     public Map<Integer, Boolean> getMyAchievements(){
         return this.myAchievements;
+    }
+
+    public void updateDistance(int distance){
+        this.distanceWalked += distance;
+
+        //Check if new value qualifies for new achievements
+        ArrayList<Integer> ret = AchievementHandler.meetDistanceCriteria(this.distanceWalked);
+        updateAchievements(ret);
+
+        //If it does, unlock it and update db
+    }
+
+    public void updateCaches(int caches){
+        this.cachesFound += caches;
+
+        //Check if new value qualifies for new achievements
+        ArrayList<Integer> ret = AchievementHandler.meetCacheCriteria(this.cachesFound);
+        updateAchievements(ret);
+
+
+        //If it does, unlock it and update db
+    }
+
+    public void updateAchievements(ArrayList<Integer> achivIds){
+        for(int i = 0; i < achivIds.size(); i++ ){
+            boolean exists = false;
+            for (Map.Entry<Integer,Boolean> entry : this.myAchievements.entrySet()) {
+                if(achivIds.get(i) == entry.getKey()) {
+                    exists = true;
+                }
+            }
+            if (!exists) {
+                this.myAchievements.put(achivIds.get(i), true);
+            }
+
+        }
     }
 
     public static final Creator<LoggedInUser> CREATOR = new Creator<LoggedInUser>() {

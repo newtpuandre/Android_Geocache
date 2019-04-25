@@ -3,6 +3,7 @@ package ntnu.imt3673.android_geocache;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,8 +62,6 @@ public class AchievementViewAdapter extends RecyclerView.Adapter<AchievementView
         holder.summary.setText(mDataset.get(position).getSummary());
         if(mDataset.get(position).isUnlocked()) {
             holder.title.setText(mDataset.get(position).getTitle() + " - UNLOCKED!");
-            holder.layoutTitle.setBackgroundColor(Color.parseColor("#8EC48A"));
-            holder.layoutSummary.setBackgroundColor(Color.parseColor("#8EC48A"));
         }
     }
 
