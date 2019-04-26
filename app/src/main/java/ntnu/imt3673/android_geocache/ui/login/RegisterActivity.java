@@ -7,15 +7,10 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import ntnu.imt3673.android_geocache.R;
@@ -24,6 +19,9 @@ public class RegisterActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
 
+    private ProgressBar loadingProgressBar;
+    private Button registerButton;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,13 +29,13 @@ public class RegisterActivity extends AppCompatActivity {
         loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory())
                 .get(LoginViewModel.class);
 
+        final EditText nameEditText = findViewById(R.id.txt_name);
+        final EditText emailEditText = findViewById(R.id.txt_email);
+        final EditText passwordEditText = findViewById(R.id.txt_password);
+        final EditText confirmPassfordEditText = findViewById(R.id.txt_confirm_password);
 
-        final EditText usernameEditText = findViewById(R.id.username_register);
-        final EditText passwordEditText = findViewById(R.id.password_register);
-        final EditText nameEditText = findViewById(R.id.name);
-        final Button registerButton = findViewById(R.id.register_btn);
-        final ProgressBar loadingProgressBar = findViewById(R.id.loading_register);
-
+        registerButton = findViewById(R.id.btn_register);
+        loadingProgressBar = findViewById(R.id.loading);
 
         loginViewModel.getLoginResult().observe(this, new Observer<LoginResult>() {
             @Override

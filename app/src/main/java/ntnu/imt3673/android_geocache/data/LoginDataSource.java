@@ -24,6 +24,17 @@ public class LoginDataSource {
         }
     }
 
+    public Result<LoggedInUser> register(String username, String password) {
+        try {
+            // TODO: handle user registration
+            Thread.sleep(1000);
+
+            return login(username, password);
+        } catch (Exception e) {
+            return new Result.Error(new IOException("Error logging in", e));
+        }
+    }
+
     public void logout() {
         // TODO: revoke authentication
     }
