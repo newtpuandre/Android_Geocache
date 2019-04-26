@@ -62,7 +62,7 @@ public class ApiHandler {
         Call<User> registerUser(@Body User RegisterUser, Callback<User> cb);
 
         @GET("/getMessages")
-        Call<Message> getMessages();
+        Call<ArrayList<Message>> getMessages();
 
         @POST("/postMessage")
         Call<Message> postMessage(@Body Message postMessage, Callback<Message> cb);
