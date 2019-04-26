@@ -32,6 +32,7 @@ public class LoginViewModel extends ViewModel {
         // can be launched in a separate asynchronous job
         new Thread(new Runnable() {
             public void run() {
+
                 Result<LoggedInUser> result = loginRepository.login(username, password);
 
                 if (result instanceof Result.Success) {
@@ -40,6 +41,7 @@ public class LoginViewModel extends ViewModel {
                 } else {
                     loginResult.postValue(new LoginResult(R.string.login_failed));
                 }
+
             }
         }).start();
 

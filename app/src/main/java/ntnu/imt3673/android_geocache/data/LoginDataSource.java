@@ -20,7 +20,6 @@ public class LoginDataSource {
         final Boolean LoggedIn = true;
 
         ApiHandler.TaskService taskService = ApiHandler.createService(ApiHandler.TaskService.class);
-        Thread t = new Thread();
         Call<ArrayList<TestData>> call = taskService.getTestData();
         ArrayList<TestData> data = null;
         try {
