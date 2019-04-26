@@ -5,6 +5,8 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.util.Patterns;
 
+import java.util.Objects;
+
 import ntnu.imt3673.android_geocache.data.LoginRepository;
 import ntnu.imt3673.android_geocache.data.Result;
 import ntnu.imt3673.android_geocache.data.model.LoggedInUser;
@@ -34,13 +36,13 @@ public class LoginViewModel extends ViewModel {
 
         if (result instanceof Result.Success) {
             LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();
-            loginResult.setValue(new LoginResult(new LoggedInUserView(data.getDisplayName())));
+            loginResult.postValue(new LoginResult(new LoggedInUserView(data.getDisplayName())));
         } else {
-            loginResult.setValue(new LoginResult(R.string.login_failed));
+            loginResult.postValue(new LoginResult(R.string.login_failed));
         }
     }
 
-    public void loginDataChanged(String username, String password) {
+    void loginDataChanged(String username, String password) {
         if (!isUserNameValid(username)) {
             loginFormState.setValue(new LoginFormState(R.string.invalid_username, null));
         } else if (!isPasswordValid(password)) {
@@ -48,6 +50,10 @@ public class LoginViewModel extends ViewModel {
         } else {
             loginFormState.setValue(new LoginFormState(true));
         }
+    }
+
+    boolean isValid() {
+        return Objects.requireNonNull(loginFormState.getValue()).isDataValid();
     }
 
     // A placeholder username validation check

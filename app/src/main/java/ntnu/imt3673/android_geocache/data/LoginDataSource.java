@@ -10,9 +10,10 @@ import java.io.IOException;
 public class LoginDataSource {
 
     public Result<LoggedInUser> login(String username, String password) {
-
         try {
             // TODO: handle loggedInUser authentication
+            Thread.sleep(1000);
+
             LoggedInUser fakeUser =
                     new LoggedInUser(
                             java.util.UUID.randomUUID().toString(),

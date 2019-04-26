@@ -23,8 +23,6 @@ import com.google.android.gms.maps.model.Marker;
 
 import ntnu.imt3673.android_geocache.data.LoginDataSource;
 import ntnu.imt3673.android_geocache.data.LoginRepository;
-import ntnu.imt3673.android_geocache.ui.login.LoginActivity;
-
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
 
@@ -41,7 +39,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public GoogleMap mMap;
     public GPSHandler mGPS;
 
-
     private LoginRepository loginRepo;
     private LoginDataSource loginData;
 
@@ -51,6 +48,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_maps);
 
         mSettingsHandler = new SettingsHandler(this.getApplicationContext());
+
+        //Login setup
+        loginData = new LoginDataSource();
+        loginRepo = LoginRepository.getInstance(loginData);
 
         // Setup the nav view
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -72,18 +73,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         assert mapFragment != null;
         mapFragment.getMapAsync(this);
-
-        //Login setup
-        loginData = new LoginDataSource();
-        loginRepo = LoginRepository.getInstance(loginData);
-
-        // Check if user is logged in.
-        if(!loginRepo.isLoggedIn()){
-            Intent i = new Intent(this, LoginActivity.class);
-            startActivity(i);
-        }
-
-        //TODO: Make sure user is logged in before we proceed with ANYTHING
     }
 
     @Override
@@ -135,7 +124,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-
         // Handle individual item clicks
         switch(menuItem.getItemId()){
             case R.id.nav_settings:
@@ -175,9 +163,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
 
     }
-
-
-
 
     /**
      * Checks For Permissions
