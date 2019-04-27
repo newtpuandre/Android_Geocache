@@ -38,6 +38,7 @@ type Message struct {
 type User struct {
 	UserID         string   `json:"userID"`
 	UserName       string   `json:"userName"`
+	FullName       string   `json:"fullName"`
 	PassHash       string   `json:"passHash"`
 	FriendIDs      []string `json:"friendIDs"`
 	CachesFound    int      `json:"cachesFound"`
