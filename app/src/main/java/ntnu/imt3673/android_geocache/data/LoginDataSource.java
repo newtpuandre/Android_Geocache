@@ -24,15 +24,27 @@ public class LoginDataSource {
         ArrayList<TestData> data = null;
         try {
             data = call.execute().body();
-            Log.d("app1", data.toString());
+            Log.d("app1", "LoginData:" + data.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-
-        LoggedInUser fakeUser = new LoggedInUser(java.util.UUID.randomUUID().toString(),
-                "Test Testesen");
         if (LoggedIn) {
+            Call<ArrayList<TestData>> userInfo = taskService.getTestData();
+            ArrayList<TestData> userData = null;
+            try {
+                userData = userInfo.execute().body();
+                Log.d("app1", "userInfo" + data.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            LoggedInUser fakeUser = new LoggedInUser(java.util.UUID.randomUUID().toString(),
+                    "Test Testesen");
+
+            //fakeUser.updateCaches();
+            //fakeUser.updateDistance();
+
             return new Result.Success<>(fakeUser);
         } else {
             return new Result.Error(new IOException("Error logging in"));

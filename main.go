@@ -1,23 +1,23 @@
 package main
 
 import (
-	"log"
 	"context"
 	"fmt"
+	"log"
+	"net/http"
 	"os"
 	"time"
-	"net/http"
-
-	"github.com/rs/xid"
+	
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/rs/xid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const (
-	dbURL = "mongodb://test_user:test123@ds135726.mlab.com:35726/map_messages"
+	dbURL       = "mongodb://test_user:test123@ds135726.mlab.com:35726/map_messages"
 	searchRange = 10
 )
 
@@ -94,17 +94,17 @@ func postMessage(c *gin.Context) {
 	message.MessageID = xid.New().String()
 	message.Timestamp = time.Now().String()
 
-	_, err := client.Database("map_messages").Collection("Messages").InsertOne(context.TODO(), message);
+	_, err := client.Database("map_messages").Collection("Messages").InsertOne(context.TODO(), message)
 	if err != nil {
 		log.Fatal(err)
 	}
-	
+
 	c.Status(http.StatusOK)
 }
 
 func getUserInfo(c *gin.Context) {
 	type userID struct {
-		userID		string		`json:"userID"`
+		userID string `json:"userID"`
 	}
 
 	var uID userID
@@ -153,12 +153,12 @@ func init() {
 }
 
 func main() {
-	
+
 	client, err := mongo.NewClient(options.Client().ApplyURI(dbURL))
 	if err != nil {
-   		log.Fatal(err)
+		log.Fatal(err)
 	}
-	
+
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
@@ -179,10 +179,10 @@ func main() {
 
 	api := router.Group("/api")
 	{
-		api.GET("/message", getMessages) 	//fetch messages should return collection of available messages to user
-		api.POST("/message", postMessage) 	//post a new message to db
-		api.GET("/user", getUserInfo) 		//fetch user information
-		api.POST("/user", postUser) 		//create new user account
+		api.GET("/message", getMessages)  //fetch messages should return collection of available messages to user
+		api.POST("/message", postMessage) //post a new message to db
+		api.GET("/user", getUserInfo)     //fetch user information
+		api.POST("/user", postUser)       //create new user account
 	}
 
 	//Listens to environment declared port, using the subrouter handlers
