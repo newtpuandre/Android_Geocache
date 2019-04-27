@@ -31,6 +31,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private ProgressBar loadingProgressBar;
     private Button loginButton;
+    private Button registerButton;
 
     private EditText emailEditText;
     private EditText passwordEditText;
@@ -44,7 +45,7 @@ public class LoginActivity extends AppCompatActivity {
         emailEditText = findViewById(R.id.txt_email);
         passwordEditText = findViewById(R.id.txt_password);
 
-        final Button registerButton = findViewById(R.id.register);
+        registerButton = findViewById(R.id.register);
         loginButton = findViewById(R.id.login);
         loadingProgressBar = findViewById(R.id.loading);
 
@@ -149,6 +150,9 @@ public class LoginActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             loginButton.setEnabled(false);
+            registerButton.setEnabled(false);
+            emailEditText.setEnabled(false);
+            passwordEditText.setEnabled(false);
             loadingProgressBar.setVisibility(View.VISIBLE);
         }
 
@@ -161,7 +165,16 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void result) {
             loginButton.setEnabled(true);
+            registerButton.setEnabled(true);
+            emailEditText.setEnabled(true);
+            passwordEditText.setEnabled(true);
             loadingProgressBar.setVisibility(View.GONE);
         }
     }
+
+    /*@Override
+    public void onBackPressed() {
+        //Do nothing. We dont want the user
+        //to back out of the login process.
+    }*/
 }

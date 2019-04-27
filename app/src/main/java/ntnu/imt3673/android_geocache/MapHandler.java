@@ -1,17 +1,24 @@
 package ntnu.imt3673.android_geocache;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
 
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
+import ntnu.imt3673.android_geocache.api.ApiHandler;
+import ntnu.imt3673.android_geocache.api.model.TestData;
 import ntnu.imt3673.android_geocache.data.model.LoggedInUser;
+import retrofit2.Call;
 
 import static java.lang.Math.acos;
 import static java.lang.Math.cos;
@@ -58,12 +65,13 @@ public class MapHandler{
      * Load locations
      * <p>
      *     Loads locations and places markers on the map.
-     *
+     *     This function MUST be run in a seperate thread!
      * </p>
+     * @param act
      */
-    public void loadLocations(){
+    public void loadLocations(Activity act){
         //Test point 1
-        Marker t;
+        /*Marker t;
         LatLng loc = new LatLng(60.807347,10.6780881);
         //60.8020848,10.6789751
         t = mMap.addMarker(new MarkerOptions().position(loc).title("Test point 1"));
@@ -79,10 +87,26 @@ public class MapHandler{
         //60.8017499,10.6771727
         loc = new LatLng(60.8017499,10.6771727);
         t = mMap.addMarker(new MarkerOptions().position(loc).title("Test point 3"));
-        markers.add(t);
+        markers.add(t);*/
 
+        ApiHandler.TaskService taskService = ApiHandler.createService(ApiHandler.TaskService.class);
+        Call<ArrayList<TestData>> call = taskService.getTestData();
+        ArrayList<TestData> data = null;
+        try {
+            data = call.execute().body();
+            Log.d("app1", "MapData:" + data.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        updateMarkers();
+        //Anything related to updating the map MUST be run in Main thread
+        act.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                updateMarkers();
+            }
+        });
+        //updateMarkers();
         /*Pseudo code
         Load markers from db into markers array.
         Loop over array and check which are supposed to be loaded (by radius) Use function updateMarkers

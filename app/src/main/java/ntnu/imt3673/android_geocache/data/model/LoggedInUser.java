@@ -9,6 +9,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ntnu.imt3673.android_geocache.AchievementHandler;
+import ntnu.imt3673.android_geocache.api.ApiHandler;
+import ntnu.imt3673.android_geocache.api.model.TestData;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Data class that captures user information for logged in users retrieved from LoginRepository
