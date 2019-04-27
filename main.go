@@ -103,10 +103,10 @@ func postMessage(c *gin.Context) {
 	_, err := client.Database("map_messages").Collection("Messages").InsertOne(context.TODO(), message)
 	if err != nil {
 		log.Println(err)
-		c.String(http.StatusBadRequest, "false")
+		c.String(http.StatusBadRequest, "")
 	}
 
-	c.String(http.StatusOK, "true")
+	c.String(http.StatusOK, message.MessageID)
 }
 
 func getUserInfo(c *gin.Context) {
