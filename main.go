@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 	"time"
-	
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/xid"
@@ -25,27 +25,27 @@ var startTime time.Time
 var client mongo.Client
 
 type Message struct {
-	MessageID	string		`json:"messageID"`
-	Timestamp	string		`json:"timestamp"`
-	UserID		string		`json:"userID"`
-	Message		string		`json:"message"`
-	ImageURL	string		`json:"imageURL"`
-	Long		float32		`json:"long"`
-	Lat			float32		`json:"lat"`
-	MType		int 		`json:"mType"`	//private/friend/public messages
+	MessageID string  `json:"messageID"`
+	Timestamp string  `json:"timestamp"`
+	UserID    string  `json:"userID"`
+	Message   string  `json:"message"`
+	ImageURL  string  `json:"imageURL"`
+	Long      float32 `json:"long"`
+	Lat       float32 `json:"lat"`
+	MType     int     `json:"mType"` //private/friend/public messages
 }
 
 type User struct {
-	UserID		string		`json:"userID"`
-	UserName	string		`json:"userName"`
-	PassHash	string		`json:"passHash"`
-	FriendIDs	[]string	`json:"friendIDs"`
+	UserID    string   `json:"userID"`
+	UserName  string   `json:"userName"`
+	PassHash  string   `json:"passHash"`
+	FriendIDs []string `json:"friendIDs"`
 }
 
 type MessageRequest struct {
-	UserID		string		`json:"userID"`
-	Long		float32		`json:"long"`
-	Lat			float32		`json:"lat"`
+	UserID string  `json:"userID"`
+	Long   float32 `json:"long"`
+	Lat    float32 `json:"lat"`
 }
 
 func getMessages(c *gin.Context) {
@@ -62,24 +62,24 @@ func getMessages(c *gin.Context) {
 	//dummy reply
 	messages := []Message{
 		Message{
-			MessageID: 	"TestMessage1",
-			Timestamp: 	time.Now().String(),
-			UserID: 	"DummyUser",
-			Message: 	"This is the first test message it has an imageURL",
-			ImageURL:	"https://images.pexels.com/photos/2156311/pexels-photo-2156311.jpeg",
-			Long:		messageRequest.Long,
-			Lat:		messageRequest.Lat,
-			MType:		0,
+			MessageID: "TestMessage1",
+			Timestamp: time.Now().String(),
+			UserID:    "DummyUser",
+			Message:   "This is the first test message it has an imageURL",
+			ImageURL:  "https://images.pexels.com/photos/2156311/pexels-photo-2156311.jpeg",
+			Long:      messageRequest.Long,
+			Lat:       messageRequest.Lat,
+			MType:     0,
 		},
 		Message{
-			MessageID: 	"TestMessage2",
-			Timestamp: 	time.Now().String(),
-			UserID: 	"UserDummy",
-			Message: 	"This is the second test message it does NOT have an imageURL",
-			ImageURL:	"",
-			Long:		messageRequest.Long + 0.001,
-			Lat:		messageRequest.Lat + 0.001,
-			MType:		0,
+			MessageID: "TestMessage2",
+			Timestamp: time.Now().String(),
+			UserID:    "UserDummy",
+			Message:   "This is the second test message it does NOT have an imageURL",
+			ImageURL:  "",
+			Long:      messageRequest.Long + 0.001,
+			Lat:       messageRequest.Lat + 0.001,
+			MType:     0,
 		},
 	}
 	//end of dummy reply
@@ -179,10 +179,10 @@ func main() {
 
 	api := router.Group("/api")
 	{
-		api.GET("/message", getMessages)  //fetch messages should return collection of available messages to user
-		api.POST("/message", postMessage) //post a new message to db
-		api.GET("/user", getUserInfo)     //fetch user information
-		api.POST("/user", postUser)       //create new user account
+		api.POST("/getmessages", getMessages) //fetch messages should return collection of available messages to user
+		api.POST("/message", postMessage)     //post a new message to db
+		api.GET("/user", getUserInfo)         //fetch user information
+		api.POST("/user", postUser)           //create new user account
 	}
 
 	//Listens to environment declared port, using the subrouter handlers
