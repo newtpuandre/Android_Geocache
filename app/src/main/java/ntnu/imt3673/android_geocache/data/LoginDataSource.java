@@ -19,7 +19,7 @@ public class LoginDataSource {
 
         final Boolean LoggedIn = true;
 
-        ApiHandler.TaskService taskService = ApiHandler.createService(ApiHandler.TaskService.class);
+        /*ApiHandler.TaskService taskService = ApiHandler.createService(ApiHandler.TaskService.class);
         Call<ArrayList<TestData>> call = taskService.getTestData();
         ArrayList<TestData> data = null;
         try {
@@ -27,17 +27,17 @@ public class LoginDataSource {
             Log.d("app1", "LoginData:" + data.toString());
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
 
         if (LoggedIn) {
-            Call<ArrayList<TestData>> userInfo = taskService.getTestData();
+            /*Call<ArrayList<TestData>> userInfo = taskService.getTestData();
             ArrayList<TestData> userData = null;
             try {
                 userData = userInfo.execute().body();
                 Log.d("app1", "userInfo" + data.toString());
             } catch (IOException e) {
                 e.printStackTrace();
-            }
+            }*/
 
             LoggedInUser fakeUser = new LoggedInUser(java.util.UUID.randomUUID().toString(),
                     "Test Testesen");

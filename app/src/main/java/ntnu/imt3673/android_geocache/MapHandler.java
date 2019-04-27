@@ -16,9 +16,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import ntnu.imt3673.android_geocache.api.ApiHandler;
+import ntnu.imt3673.android_geocache.api.model.Message;
+import ntnu.imt3673.android_geocache.api.model.MessageRequest;
 import ntnu.imt3673.android_geocache.api.model.TestData;
 import ntnu.imt3673.android_geocache.data.model.LoggedInUser;
 import retrofit2.Call;
+import retrofit2.Callback;
 
 import static java.lang.Math.acos;
 import static java.lang.Math.cos;
@@ -70,39 +73,32 @@ public class MapHandler{
      * @param act
      */
     public void loadLocations(Activity act){
-        //Test point 1
-        /*Marker t;
-        LatLng loc = new LatLng(60.807347,10.6780881);
-        //60.8020848,10.6789751
-        t = mMap.addMarker(new MarkerOptions().position(loc).title("Test point 1"));
-        markers.add(t);
 
-        //Test point 2
-        //60.7929976,10.6791039
-        loc = new LatLng(60.7929976,10.6791039);
-        t = mMap.addMarker(new MarkerOptions().position(loc).title("Test point 2"));
-        markers.add(t);
-
-        //Test point 3
-        //60.8017499,10.6771727
-        loc = new LatLng(60.8017499,10.6771727);
-        t = mMap.addMarker(new MarkerOptions().position(loc).title("Test point 3"));
-        markers.add(t);*/
-
+        //Load data from DB
         ApiHandler.TaskService taskService = ApiHandler.createService(ApiHandler.TaskService.class);
-        Call<ArrayList<TestData>> call = taskService.getTestData();
-        ArrayList<TestData> data = null;
+        LatLng temp = mGps.getCurrentLocation();
+        MessageRequest tempReq = new MessageRequest("temp", temp.longitude, temp.latitude);
+        Call<ArrayList<Message>> call = taskService.getMessages(tempReq);
+        ArrayList<Message> data = null;
         try {
             data = call.execute().body();
-            Log.d("app1", "MapData:" + data.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+
         //Anything related to updating the map MUST be run in Main thread
+        final ArrayList<Message> finalData = data;
         act.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                LatLng loc;
+                Marker t;
+                for (int i = 0; i < finalData.size(); i++) {
+                    loc = new LatLng(finalData.get(i).getLatitude(), finalData.get(i).getLongitude());
+                    t = mMap.addMarker(new MarkerOptions().position(loc).title(finalData.get(i).getMessage()));
+                    markers.add(t);
+                }
                 updateMarkers();
             }
         });

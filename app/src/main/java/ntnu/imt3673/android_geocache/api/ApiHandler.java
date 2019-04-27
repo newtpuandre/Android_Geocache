@@ -3,6 +3,7 @@ package ntnu.imt3673.android_geocache.api;
 import java.util.ArrayList;
 
 import ntnu.imt3673.android_geocache.api.model.Message;
+import ntnu.imt3673.android_geocache.api.model.MessageRequest;
 import ntnu.imt3673.android_geocache.api.model.TestData;
 import ntnu.imt3673.android_geocache.api.model.User;
 import okhttp3.OkHttpClient;
@@ -19,7 +20,7 @@ public class ApiHandler {
 
 
     //Root URL
-    private static final String API_URL = "https://jsonplaceholder.typicode.com";
+    private static final String API_URL = "http://10.0.0.120:8080/";
 
     private static Retrofit.Builder builder =
             new Retrofit.Builder()
@@ -56,16 +57,16 @@ public class ApiHandler {
         Call<User> fetchUserInfo();
 
         @POST("/login")
-        Call<User> loginUser(@Body User LoginUser, Callback<User> cb);
+        Call<User> loginUser(@Body User LoginUser);
 
         @POST("/User")
-        Call<User> registerUser(@Body User RegisterUser, Callback<User> cb);
+        Call<User> registerUser(@Body User RegisterUser);
 
-        @GET("/getMessages")
-        Call<ArrayList<Message>> getMessages();
+        @POST("/api/getmessages")
+        Call<ArrayList<Message>> getMessages(@Body MessageRequest msgreq);
 
-        @POST("/postMessage")
-        Call<Message> postMessage(@Body Message postMessage, Callback<Message> cb);
+        @POST("/api/message")
+        Call<Boolean> postMessage(@Body Message postMessage);
 
     }
 

@@ -12,10 +12,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
 import ntnu.imt3673.android_geocache.api.ApiHandler;
+import ntnu.imt3673.android_geocache.api.model.Message;
+import ntnu.imt3673.android_geocache.api.model.MessageRequest;
 import ntnu.imt3673.android_geocache.api.model.TestData;
 import retrofit2.Call;
 
@@ -42,25 +46,36 @@ public class AddMessageActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Log.d("app1", message.getText().toString());
 
-                //Disable input.
-                sendBtn.setEnabled(false);
-                message.setEnabled(false);
+                if (message.getText().length() > 0) {
+                    //Disable input.
+                    sendBtn.setEnabled(false);
+                    message.setEnabled(false);
 
-                //Add to database.
-                new Thread(new Runnable() {
-                    public void run() {
-                        ApiHandler.TaskService taskService = ApiHandler.createService(ApiHandler.TaskService.class);
-                        Call<ArrayList<TestData>> call = taskService.getTestData();
-                        ArrayList<TestData> data = null;
-                        try {
-                            data = call.execute().body();
-                            Log.d("app1", "AddMessageData:" + data.toString());
-                            addMessage();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }}).start();
+                    //Add to database.
+                    new Thread(new Runnable() {
+                        public void run() {
+                            ApiHandler.TaskService taskService = ApiHandler.createService(ApiHandler.TaskService.class);
+                            LatLng temp = GPSHandler.getCurrentLocation();
+                            Message tempMsg = new Message("","","test", message.getText().toString(),
+                                "test", temp.longitude, temp.latitude, 2);
+                            Call<Boolean> call = taskService.postMessage(tempMsg);
+                            try {
+                                Boolean ret = call.execute().body();
+                                if (ret) {
+                                    addMessage();
+                                } else {
+                                    Log.d("app1", "Error posting message");
+                                }
 
+
+                            } catch (IOException e) {
+                               e.printStackTrace();
+                            }
+                        }}).start();
+
+                } else {
+                    //TODO: Give user an error
+                }
             }
         });
     }

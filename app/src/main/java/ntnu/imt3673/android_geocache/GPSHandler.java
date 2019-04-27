@@ -9,7 +9,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class GPSHandler {
 
-    private LocationManager locManager;
+    private static LocationManager locManager;
 
     /**
      * Constructor
@@ -32,7 +32,7 @@ public class GPSHandler {
      * @return LatLng
      */
     @SuppressLint("MissingPermission")
-    public LatLng getCurrentLocation(){
+    public static LatLng getCurrentLocation(){
         String locationProviderNetwork = LocationManager.NETWORK_PROVIDER;
         String locationProviderGPS = LocationManager.GPS_PROVIDER;
 
