@@ -1,4 +1,4 @@
-package ntnu.imt3673.android_geocache.ui.login;
+package ntnu.imt3673.android_geocache.ui.register;
 
 import android.annotation.SuppressLint;
 import android.arch.lifecycle.Observer;
@@ -22,40 +22,43 @@ import android.widget.Toast;
 
 import ntnu.imt3673.android_geocache.MapsActivity;
 import ntnu.imt3673.android_geocache.R;
-import ntnu.imt3673.android_geocache.ui.register.RegisterActivity;
+import ntnu.imt3673.android_geocache.ui.login.LoginResult;
 
-public class LoginActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity {
 
-    private LoginViewModel loginViewModel;
+    private RegisterViewModel registerViewModel;
 
     private ProgressBar loadingProgressBar;
-    private Button loginButton;
     private Button registerButton;
 
+    private EditText nameEditText;
     private EditText emailEditText;
     private EditText passwordEditText;
+    private EditText confirmPasswordEditText;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-        loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory()).get(LoginViewModel.class);
+        setContentView(R.layout.activity_register);
+        registerViewModel = ViewModelProviders.of(this, new RegisterViewModelFactory())
+                .get(RegisterViewModel.class);
 
+        nameEditText = findViewById(R.id.txt_name);
         emailEditText = findViewById(R.id.txt_email);
         passwordEditText = findViewById(R.id.txt_password);
+        confirmPasswordEditText = findViewById(R.id.txt_confirm_password);
 
-        registerButton = findViewById(R.id.register);
-        loginButton = findViewById(R.id.login);
+        registerButton = findViewById(R.id.btn_register);
         loadingProgressBar = findViewById(R.id.loading);
 
-        /*loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
+        registerViewModel.getRegisterFormState().observe(this, new Observer<RegisterFormState>() {
             @Override
-            public void onChanged(@Nullable LoginFormState loginFormState) {
-                onFormChanged(loginFormState);
+            public void onChanged(@Nullable RegisterFormState registerFormState) {
+                onFormChanged(registerFormState);
             }
-        });*/
+        });
 
-        loginViewModel.getLoginResult().observe(this, new Observer<LoginResult>() {
+        registerViewModel.getLoginResult().observe(this, new Observer<LoginResult>() {
             @Override
             public void onChanged(@Nullable LoginResult loginResult) {
                 onLoginResult(loginResult);
@@ -63,7 +66,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         // Text field watchers
-        /*TextWatcher afterTextChangedListener = new TextWatcher() {
+        TextWatcher afterTextChangedListener = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 // ignore
@@ -76,104 +79,102 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                loginViewModel.loginDataChanged(emailEditText.getText().toString(), passwordEditText.getText().toString());
+                registerViewModel.registerDataChanged(nameEditText.getText().toString(), emailEditText.getText().toString(), passwordEditText.getText().toString(), confirmPasswordEditText.getText().toString());
             }
         };
+        nameEditText.addTextChangedListener(afterTextChangedListener);
         emailEditText.addTextChangedListener(afterTextChangedListener);
-        passwordEditText.addTextChangedListener(afterTextChangedListener);*/
-        passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        passwordEditText.addTextChangedListener(afterTextChangedListener);
+        confirmPasswordEditText.addTextChangedListener(afterTextChangedListener);
+        confirmPasswordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE && loginViewModel.isValid()) {
-                    new LoginTask().execute(emailEditText.getText().toString(), passwordEditText.getText().toString());
+                if (actionId == EditorInfo.IME_ACTION_DONE && registerViewModel.isValid()) {
+                    new RegisterTask().execute(nameEditText.getText().toString(), emailEditText.getText().toString(), passwordEditText.getText().toString(), confirmPasswordEditText.getText().toString());
                 }
                 return false;
             }
         });
 
         // Button click handlers
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(loginViewModel.isValid()) {
-                    new LoginTask().execute(emailEditText.getText().toString(), passwordEditText.getText().toString());
-                }
-            }
-        });
-
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent registerIntent = new Intent(LoginActivity.this.getApplication(), RegisterActivity.class);
-                startActivity(registerIntent);
+                if(registerViewModel.isValid()) {
+                    new RegisterTask().execute(nameEditText.getText().toString(), emailEditText.getText().toString(), passwordEditText.getText().toString(), confirmPasswordEditText.getText().toString());
+                }
             }
         });
     }
 
-    /*private void onFormChanged(LoginFormState loginFormState) {
-        if (loginFormState == null) {
+    private void onFormChanged(RegisterFormState registerFormState) {
+        if (registerFormState == null) {
             return;
         }
-        loginButton.setEnabled(loginFormState.isDataValid());
-        if (loginFormState.getUsernameError() != null) {
-            emailEditText.setError(getString(loginFormState.getUsernameError()));
+
+        registerButton.setEnabled(registerFormState.isDataValid());
+
+        if (registerFormState.getNameError() != null) {
+            nameEditText.setError(getString(registerFormState.getNameError()));
         }
-        if (loginFormState.getPasswordError() != null) {
-            passwordEditText.setError(getString(loginFormState.getPasswordError()));
+        if (registerFormState.getEmailError() != null) {
+            emailEditText.setError(getString(registerFormState.getEmailError()));
         }
-    }*/
+        if (registerFormState.getPasswordError() != null) {
+            passwordEditText.setError(getString(registerFormState.getPasswordError()));
+        }
+        if (registerFormState.getConfirmPasswordError() != null) {
+            confirmPasswordEditText.setError(getString(registerFormState.getConfirmPasswordError()));
+        }
+    }
 
     private void onLoginResult(LoginResult loginResult) {
         if (loginResult == null) {
             return;
         }
         if (loginResult.getError() != null) {
-            showLoginFailed(loginResult.getError());
+            showRegisterFailed(loginResult.getError());
         }
         if (loginResult.getSuccess() != null) {
             // Destroy the login activity and open the map activity
             finish();
-            Intent addMessageIntent = new Intent(LoginActivity.this, MapsActivity.class);
+            Intent addMessageIntent = new Intent(RegisterActivity.this, MapsActivity.class);
             startActivity(addMessageIntent);
         }
     }
 
-    private void showLoginFailed(@StringRes Integer errorString) {
+    private void showRegisterFailed(@StringRes Integer errorString) {
         Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
     }
 
     @SuppressLint("StaticFieldLeak")
-    private class LoginTask extends AsyncTask<String, Integer, Void> {
+    private class RegisterTask extends AsyncTask<String, Integer, Void> {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            loginButton.setEnabled(false);
             registerButton.setEnabled(false);
+            nameEditText.setEnabled(false);
             emailEditText.setEnabled(false);
             passwordEditText.setEnabled(false);
+            confirmPasswordEditText.setEnabled(false);
             loadingProgressBar.setVisibility(View.VISIBLE);
         }
 
         @Override
         protected Void doInBackground(String[] fields) {
-            loginViewModel.login(fields[0], fields[1]);
+            registerViewModel.register(fields[0], fields[1], fields[2], fields[3]);
             return null;
         }
 
         @Override
         protected void onPostExecute(Void result) {
-            loginButton.setEnabled(true);
             registerButton.setEnabled(true);
+            nameEditText.setEnabled(true);
             emailEditText.setEnabled(true);
             passwordEditText.setEnabled(true);
+            confirmPasswordEditText.setEnabled(true);
             loadingProgressBar.setVisibility(View.GONE);
         }
     }
-
-    /*@Override
-    public void onBackPressed() {
-        //Do nothing. We dont want the user
-        //to back out of the login process.
-    }*/
 }
