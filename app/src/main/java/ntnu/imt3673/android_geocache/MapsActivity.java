@@ -92,6 +92,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             case ADD_MESSAGE_REQUEST:
                 if (resultCode == RESULT_OK) {
                     String ret = data.getStringExtra("message");
+
+                    //Visually add marker to map.
                     gMapsHandler.addLocation(ret, mGPS.getCurrentLocation());
                 }
                 break;
@@ -163,7 +165,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         gMapsHandler = new MapHandler(googleMap, mGPS);
-        gMapsHandler.loadLocations();
+
+        new Thread(new Runnable() {
+            public void run() {
+                gMapsHandler.loadLocations(MapsActivity.this);
+            }}).start();
+
         gMapsHandler.moveToUser();
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
