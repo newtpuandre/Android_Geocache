@@ -58,13 +58,13 @@ public class AddMessageActivity extends AppCompatActivity {
                             LatLng temp = GPSHandler.getCurrentLocation();
                             Message tempMsg = new Message("","","test", message.getText().toString(),
                                 "test", temp.longitude, temp.latitude, 2);
-                            Call<Boolean> call = taskService.postMessage(tempMsg);
+                            Call<String> call = taskService.postMessage(tempMsg);
                             try {
-                                Boolean ret = call.execute().body();
-                                if (ret) {
-                                    addMessage();
-                                } else {
+                                String ret = call.execute().body();
+                                if (!ret.contentEquals("")) {
                                     Log.d("app1", "Error posting message");
+                                } else {
+                                    addMessage(ret);
                                 }
 
 
@@ -91,9 +91,10 @@ public class AddMessageActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void addMessage(){
+    private void addMessage(String messageID){
         Intent returnIntent = new Intent();
         returnIntent.putExtra("message", message.getText().toString());
+        returnIntent.putExtra("messageID", messageID);
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }

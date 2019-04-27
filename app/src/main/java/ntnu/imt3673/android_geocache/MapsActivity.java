@@ -92,9 +92,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             case ADD_MESSAGE_REQUEST:
                 if (resultCode == RESULT_OK) {
                     String ret = data.getStringExtra("message");
+                    String messageID = data.getStringExtra("messageID");
 
                     //Visually add marker to map.
-                    gMapsHandler.addLocation(ret, mGPS.getCurrentLocation());
+                    gMapsHandler.addLocation(messageID, ret, mGPS.getCurrentLocation());
                 }
                 break;
             case SETTINGS_MENU:

@@ -2,10 +2,8 @@ package ntnu.imt3673.android_geocache;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.util.Log;
 
-import com.google.android.gms.common.internal.safeparcel.SafeParcelable;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
@@ -18,10 +16,8 @@ import java.util.ArrayList;
 import ntnu.imt3673.android_geocache.api.ApiHandler;
 import ntnu.imt3673.android_geocache.api.model.Message;
 import ntnu.imt3673.android_geocache.api.model.MessageRequest;
-import ntnu.imt3673.android_geocache.api.model.TestData;
 import ntnu.imt3673.android_geocache.data.model.LoggedInUser;
 import retrofit2.Call;
-import retrofit2.Callback;
 
 import static java.lang.Math.acos;
 import static java.lang.Math.cos;
@@ -34,8 +30,8 @@ public class MapHandler{
     private GPSHandler mGps;
     private LoggedInUser user;
 
-    private ArrayList<Marker> markers;
-    private ArrayList<LatLng> visitedMarkers;
+    private ArrayList<MapMarker> markers;
+    private ArrayList<MapMarker> visitedMarkers;
 
     /**
      * Constructor
@@ -94,10 +90,17 @@ public class MapHandler{
             public void run() {
                 LatLng loc;
                 Marker t;
+                MapMarker temp;
                 for (int i = 0; i < finalData.size(); i++) {
                     loc = new LatLng(finalData.get(i).getLatitude(), finalData.get(i).getLongitude());
                     t = mMap.addMarker(new MarkerOptions().position(loc).title(finalData.get(i).getMessage()));
-                    markers.add(t);
+
+                    temp = new MapMarker(finalData.get(i).getMessageID(), finalData.get(i).getLongitude(),
+                            finalData.get(i).getLatitude(), t);
+
+                    //Keep a refrence of the object for later.
+                    t.setTag(temp);
+                    markers.add(temp);
                 }
                 updateMarkers();
             }
@@ -122,13 +125,14 @@ public class MapHandler{
         Log.d("app1", mypos.toString());
 
         for(int i = 0; i < markers.size(); i++) {
-            Marker tempMarker = markers.get(i);
-            double distance = greatCircleInMeters(mypos, tempMarker.getPosition());
+            MapMarker tempMarker = markers.get(i);
+            LatLng markerPos = new LatLng(tempMarker.getLat(),tempMarker.getLon());
+            double distance = greatCircleInMeters(mypos, markerPos);
             Log.d("app1", "" + distance);
             if (distance >= SettingsHandler.returnSearchRadius()) {
-                tempMarker.setVisible(false);
+                tempMarker.getMyMark().setVisible(false);
             } else {
-                tempMarker.setVisible(true);
+                tempMarker.getMyMark().setVisible(true);
             }
         }
     }
@@ -136,25 +140,25 @@ public class MapHandler{
     public boolean onMarkerClick(Marker marker, LoggedInUser user) {
         if ( visitedMarkers.size() == 0) {
             LatLng temp = marker.getPosition();
-            visitedMarkers.add(temp);
+            MapMarker clickMark = (MapMarker) marker.getTag();
+            visitedMarkers.add(clickMark);
             user.updateCaches(1);
             return false;
         }
 
         boolean found = false;
 
+        MapMarker clickMark = (MapMarker) marker.getTag();
         for (int i = 0; i < visitedMarkers.size(); i++) {
-            LatLng markerpos = marker.getPosition();
-            LatLng loopMark = visitedMarkers.get(i);
+            MapMarker loopMark = visitedMarkers.get(i);
 
-            if (loopMark.longitude == markerpos.longitude
-                    && loopMark.latitude == markerpos.latitude) {
+            if (loopMark.getMessageID() == clickMark.getMessageID()) {
                 found = true;
             }
         }
 
         if (!found) {
-            visitedMarkers.add(marker.getPosition());
+            visitedMarkers.add(clickMark);
             user.updateCaches(1);
         }
 
@@ -199,11 +203,11 @@ public class MapHandler{
      * @param pos
      */
 
-    public void addLocation(String message, LatLng pos){
+    public void addLocation(String messageID,String message, LatLng pos){
         Marker t;
         t = mMap.addMarker(new MarkerOptions().position(pos).title(message));
-        markers.add(t);
-        //Add to database.
+        MapMarker temp = new MapMarker(messageID, pos.longitude, pos.latitude,t);
+        markers.add(temp);
     }
 
     /**

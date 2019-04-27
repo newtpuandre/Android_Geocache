@@ -66,7 +66,7 @@ public class ApiHandler {
         Call<ArrayList<Message>> getMessages(@Body MessageRequest msgreq);
 
         @POST("/api/message")
-        Call<Boolean> postMessage(@Body Message postMessage);
+        Call<String> postMessage(@Body Message postMessage);
 
     }
 
