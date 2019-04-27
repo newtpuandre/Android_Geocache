@@ -44,12 +44,21 @@ public class LoginDataSource {
 
             //fakeUser.updateCaches();
             //fakeUser.updateDistance();
-
             return new Result.Success<>(fakeUser);
         } else {
             return new Result.Error(new IOException("Error logging in"));
         }
+    }
 
+    public Result<LoggedInUser> register(String name, String email, String password, String confirmPassword) {
+        try {
+            // TODO: handle user registration
+            Thread.sleep(1000);
+
+            return login(email, password);
+        } catch (Exception e) {
+            return new Result.Error(new IOException("Error logging in", e));
+        }
     }
 
     public void logout() {
