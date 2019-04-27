@@ -49,6 +49,7 @@ type MessageRequest struct {
 }
 
 func getMessages(c *gin.Context) {
+	//client := returnClient()
 	var messageRequest MessageRequest
 	c.BindJSON(&messageRequest)
 	/*mdb := client.Database("map_messages").Collection("Messages")
@@ -88,6 +89,8 @@ func getMessages(c *gin.Context) {
 }
 
 func postMessage(c *gin.Context) {
+	client := returnClient()
+
 	var message Message
 	c.BindJSON(&message)
 
@@ -103,6 +106,7 @@ func postMessage(c *gin.Context) {
 }
 
 func getUserInfo(c *gin.Context) {
+	client := returnClient()
 	type userID struct {
 		userID string `json:"userID"`
 	}
@@ -123,6 +127,7 @@ func getUserInfo(c *gin.Context) {
 
 //User creation
 func postUser(c *gin.Context) {
+	client := returnClient()
 	var user User
 	c.BindJSON(&user)
 
@@ -152,13 +157,11 @@ func init() {
 	fmt.Printf("Program Starting\nCurrent time: %v\n\n", startTime.Format(time.UnixDate))
 }
 
-func main() {
-
+func returnClient() *mongo.Client {
 	client, err := mongo.NewClient(options.Client().ApplyURI(dbURL))
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
@@ -166,6 +169,10 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	return client
+}
+
+func main() {
 
 	port, err := determineListenAddress()
 	if err != nil {
