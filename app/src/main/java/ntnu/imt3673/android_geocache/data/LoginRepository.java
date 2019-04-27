@@ -55,4 +55,13 @@ public class LoginRepository {
         }
         return result;
     }
+
+    public Result<LoggedInUser> register(String name, String email, String password, String confirmPassword) {
+        // handle login
+        Result<LoggedInUser> result = dataSource.register(name, email, password, confirmPassword);
+        if (result instanceof Result.Success) {
+            setLoggedInUser(((Result.Success<LoggedInUser>) result).getData());
+        }
+        return result;
+    }
 }
