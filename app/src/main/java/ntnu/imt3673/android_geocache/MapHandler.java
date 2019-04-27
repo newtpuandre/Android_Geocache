@@ -91,18 +91,20 @@ public class MapHandler{
                 LatLng loc;
                 Marker t;
                 MapMarker temp;
-                for (int i = 0; i < finalData.size(); i++) {
-                    loc = new LatLng(finalData.get(i).getLatitude(), finalData.get(i).getLongitude());
-                    t = mMap.addMarker(new MarkerOptions().position(loc).title(finalData.get(i).getMessage()));
+                if (finalData.size() != 0) {
+                    for (int i = 0; i < finalData.size(); i++) {
+                        loc = new LatLng(finalData.get(i).getLatitude(), finalData.get(i).getLongitude());
+                        t = mMap.addMarker(new MarkerOptions().position(loc).title(finalData.get(i).getMessage()));
 
-                    temp = new MapMarker(finalData.get(i).getMessageID(), finalData.get(i).getLongitude(),
-                            finalData.get(i).getLatitude(), t);
+                        temp = new MapMarker(finalData.get(i).getMessageID(), finalData.get(i).getLongitude(),
+                                finalData.get(i).getLatitude(), t);
 
-                    //Keep a refrence of the object for later.
-                    t.setTag(temp);
-                    markers.add(temp);
+                        //Keep a refrence of the object for later.
+                        t.setTag(temp);
+                        markers.add(temp);
+                    }
+                    updateMarkers();
                 }
-                updateMarkers();
             }
         });
         //updateMarkers();
