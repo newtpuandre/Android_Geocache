@@ -53,7 +53,7 @@ public class AchievementHandler {
         return achievementsQualified;
     }
 
-    public static ArrayList<Integer> meetDistanceCriteria(int distanceNum){
+    public static ArrayList<Integer> meetDistanceCriteria(double distanceNum){
         ArrayList<Achievement> ret = returnAchievementList();
         ArrayList<Integer> achievementsQualified = new ArrayList<>();
 

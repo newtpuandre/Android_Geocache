@@ -53,11 +53,14 @@ public class MapHandler{
      * </p>
      * @param pMap
      * @param pGps
+     * @param context
+     * @param user
      */
     @SuppressLint("MissingPermission")
-    MapHandler(GoogleMap pMap, GPSHandler pGps, Context context){
+    MapHandler(GoogleMap pMap, GPSHandler pGps, Context context, LoggedInUser user){
         this.mMap = pMap;
         this.mGps = pGps;
+        this.user = user;
         mMap.setMyLocationEnabled(true);
         markers = new ArrayList<>();
 
@@ -101,14 +104,13 @@ public class MapHandler{
             Log.d("app1", "Moved more than 10 meters");
 
             //Update users distance walked.
-
+            user.updateDistance(distance * 1000);
             //Load new markers from db based on location
             updateMarkers();
         }
         //Update last pos to new position.
         lastPos = new LatLng(location.getLatitude(), location.getLongitude());
     }
-
 
 
     /**
@@ -142,7 +144,7 @@ public class MapHandler{
                 LatLng loc;
                 Marker t;
                 MapMarker temp;
-                if (finalData.size() != 0) {
+                if (finalData != null) {
                     for (int i = 0; i < finalData.size(); i++) {
                         loc = new LatLng(finalData.get(i).getLatitude(), finalData.get(i).getLongitude());
                         t = mMap.addMarker(new MarkerOptions().position(loc).title(finalData.get(i).getMessage()));

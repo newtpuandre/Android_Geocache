@@ -23,6 +23,7 @@ import com.google.android.gms.maps.model.Marker;
 
 import ntnu.imt3673.android_geocache.data.LoginDataSource;
 import ntnu.imt3673.android_geocache.data.LoginRepository;
+import ntnu.imt3673.android_geocache.data.model.LoggedInUser;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
 
@@ -154,7 +155,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        gMapsHandler = new MapHandler(googleMap, mGPS, this);
+        gMapsHandler = new MapHandler(googleMap, mGPS, this, loginRepo.returnUser());
 
         new Thread(new Runnable() {
             public void run() {

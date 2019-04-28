@@ -23,7 +23,7 @@ public class LoggedInUser implements Parcelable {
     private String userId;
     private String displayName;
 
-    private int distanceWalked; //In Kilometers
+    private double distanceWalked; //In Kilometers
     private int cachesFound;
 
     //Contains achievement ID (Integer) and True/false if it is unlocked (Bool)
@@ -50,7 +50,7 @@ public class LoggedInUser implements Parcelable {
     protected LoggedInUser(Parcel in) {
         this.userId = in.readString();
         this.displayName = in.readString();
-        this.distanceWalked = in.readInt();
+        this.distanceWalked = in.readDouble();
         this.myAchievements = in.readHashMap(this.getClass().getClassLoader());
         this.cachesFound = in.readInt();
     }
@@ -76,7 +76,7 @@ public class LoggedInUser implements Parcelable {
         return this.myAchievements;
     }
 
-    public void updateDistance(int distance){
+    public void updateDistance(double distance){
         this.distanceWalked += distance;
 
         //Check if new value qualifies for new achievements
@@ -133,7 +133,7 @@ public class LoggedInUser implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.userId);
         dest.writeString(this.displayName);
-        dest.writeInt(this.distanceWalked);
+        dest.writeDouble(this.distanceWalked);
         dest.writeMap(this.myAchievements);
         dest.writeInt(this.cachesFound);
     }
