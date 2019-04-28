@@ -2,6 +2,11 @@ package ntnu.imt3673.android_geocache;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -16,6 +21,8 @@ import java.util.ArrayList;
 import ntnu.imt3673.android_geocache.api.ApiHandler;
 import ntnu.imt3673.android_geocache.api.model.Message;
 import ntnu.imt3673.android_geocache.api.model.MessageRequest;
+import ntnu.imt3673.android_geocache.data.LoginDataSource;
+import ntnu.imt3673.android_geocache.data.LoginRepository;
 import ntnu.imt3673.android_geocache.data.model.LoggedInUser;
 import retrofit2.Call;
 
@@ -25,6 +32,8 @@ import static java.lang.Math.sin;
 
 public class MapHandler{
     static double PI_RAD = Math.PI / 180.0;
+
+    private LatLng lastPos;
 
     private GoogleMap mMap;
     private GPSHandler mGps;
@@ -46,7 +55,7 @@ public class MapHandler{
      * @param pGps
      */
     @SuppressLint("MissingPermission")
-    MapHandler(GoogleMap pMap, GPSHandler pGps){
+    MapHandler(GoogleMap pMap, GPSHandler pGps, Context context){
         this.mMap = pMap;
         this.mGps = pGps;
         mMap.setMyLocationEnabled(true);
@@ -57,7 +66,49 @@ public class MapHandler{
         //to prevent crash
         visitedMarkers = new ArrayList<>();
 
+        // Acquire a reference to the system Location Manager
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+
+        // Define a listener that responds to location updates
+        LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                // Called when a new location is found by the network location provider.
+                checkNewLocation(location);
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+            public void onProviderEnabled(String provider) {}
+
+            public void onProviderDisabled(String provider) {}
+        };
+
+        // Register the listener with the Location Manager to receive location updates
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+
+
     }
+
+    private void checkNewLocation(Location location) {
+        if(lastPos == null) {
+            lastPos = GPSHandler.getCurrentLocation();
+            return;
+        }
+
+        LatLng curpos = new LatLng(location.getLatitude(), location.getLongitude());
+        double distance = greatCircleInMeters(lastPos, curpos);
+        if (distance > 10) { //Is distance moved greater than 10 meters?
+            Log.d("app1", "Moved more than 10 meters");
+
+            //Update users distance walked.
+
+            //Load new markers from db based on location
+            updateMarkers();
+        }
+        //Update last pos to new position.
+        lastPos = new LatLng(location.getLatitude(), location.getLongitude());
+    }
+
 
 
     /**
@@ -141,7 +192,6 @@ public class MapHandler{
 
     public boolean onMarkerClick(Marker marker, LoggedInUser user) {
         if ( visitedMarkers.size() == 0) {
-            LatLng temp = marker.getPosition();
             MapMarker clickMark = (MapMarker) marker.getTag();
             visitedMarkers.add(clickMark);
             user.updateCaches(1);
