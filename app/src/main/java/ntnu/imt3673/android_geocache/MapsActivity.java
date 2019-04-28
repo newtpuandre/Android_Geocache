@@ -23,7 +23,6 @@ import com.google.android.gms.maps.model.Marker;
 
 import ntnu.imt3673.android_geocache.data.LoginDataSource;
 import ntnu.imt3673.android_geocache.data.LoginRepository;
-import ntnu.imt3673.android_geocache.data.model.LoggedInUser;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
 
@@ -208,4 +207,5 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             // permissions this app might request.
         }
     }
+
 }

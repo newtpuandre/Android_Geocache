@@ -1,9 +1,6 @@
 package ntnu.imt3673.android_geocache;
 
-import android.content.Context;
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +29,6 @@ public class AchievementViewAdapter extends RecyclerView.Adapter<AchievementView
 
             title = view.findViewById(R.id.title);
             summary = view.findViewById(R.id.summary);
-            image = view.findViewById(R.id.achievement_icon);
             layoutTitle = view.findViewById(R.id.layout_title);
             layoutSummary = view.findViewById(R.id.layout_summary);
         }
