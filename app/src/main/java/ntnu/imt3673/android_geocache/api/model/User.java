@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 public class User {
 
     @SerializedName("userID")
-    private Integer userID;
+    private String userID;
 
     @SerializedName("userName")
     private String userName;
@@ -13,8 +13,8 @@ public class User {
     @SerializedName("passHash")
     private String passHash;
 
-    @SerializedName("friendIDs")
-    private Integer friendIDs[];
+    @SerializedName("fullName")
+    private String fullName;
 
     @SerializedName("cachesFound")
     private Integer cachesFound;
@@ -22,20 +22,20 @@ public class User {
     @SerializedName("distanceWalked")
     private Integer distanceWalked;
 
-    public User(Integer userID, String userName, String passHash, Integer[] friendsIDs, Integer cachesFound, Integer distanceWalked){
+    public User(String userID, String userName, String passHash, String fullName, Integer cachesFound, Integer distanceWalked){
         this.userID = userID;
         this.userName = userName;
         this.passHash = passHash;
-        this.friendIDs = friendsIDs;
+        this.fullName = fullName;
         this.cachesFound = cachesFound;
         this.distanceWalked = distanceWalked;
     }
 
-    public Integer getUserID() {
+    public String getUserID() {
         return userID;
     }
 
-    public void setUserID(Integer userID) {
+    public void setUserID(String userID) {
         this.userID = userID;
     }
 
@@ -47,8 +47,8 @@ public class User {
         this.userName = userName;
     }
 
-    public Integer[] getFriendIDs() {
-        return friendIDs;
+    public String getfullName() {
+        return fullName;
     }
 
     public String getPassHash() { return passHash; }

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import ntnu.imt3673.android_geocache.api.ApiHandler;
 import ntnu.imt3673.android_geocache.api.model.TestData;
+import ntnu.imt3673.android_geocache.api.model.User;
 import ntnu.imt3673.android_geocache.data.model.LoggedInUser;
 import retrofit2.Call;
 
@@ -52,7 +53,16 @@ public class LoginDataSource {
 
     public Result<LoggedInUser> register(String name, String email, String password, String confirmPassword) {
         try {
-            // TODO: handle user registration
+            ApiHandler.TaskService taskService = ApiHandler.createService(ApiHandler.TaskService.class);
+            //TODO: Make sure password is hashed
+            User tempuser = new User("", email, password, name, 0, 0);
+            Call<Void> call = taskService.registerUser(tempuser);
+            try {
+                call.execute();
+                Log.d("app1", "LoginData:" + tempuser.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             Thread.sleep(1000);
 
             return login(email, password);

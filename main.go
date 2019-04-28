@@ -36,13 +36,13 @@ type Message struct {
 }
 
 type User struct {
-	UserID         string   `json:"userID"`
-	UserName       string   `json:"userName"`
-	FullName       string   `json:"fullName"`
-	PassHash       string   `json:"passHash"`
-	FriendIDs      []string `json:"friendIDs"`
-	CachesFound    int      `json:"cachesFound"`
-	DistanceWalked int      `json:"distanceWalked"`
+	FullName string `json:"fullName"`
+	UserID   string `json:"userID"`
+	UserName string `json:"userName"`
+	PassHash string `json:"passHash"`
+	//FriendIDs      []string `json:"friendIDs"`
+	CachesFound    int `json:"cachesFound"`
+	DistanceWalked int `json:"distanceWalked"`
 }
 
 type MessageRequest struct {
@@ -133,6 +133,7 @@ func getUserInfo(c *gin.Context) {
 //User creation
 func postUser(c *gin.Context) {
 	client := returnClient()
+
 	var user User
 	c.BindJSON(&user)
 

@@ -20,7 +20,7 @@ public class ApiHandler {
 
 
     //Root URL
-    private static final String API_URL = "http://10.0.0.120:8080/";
+    private static final String API_URL = "http://10.13.37.52:8080/";
 
     private static Retrofit.Builder builder =
             new Retrofit.Builder()
@@ -59,8 +59,8 @@ public class ApiHandler {
         @POST("/login")
         Call<User> loginUser(@Body User LoginUser);
 
-        @POST("/User")
-        Call<User> registerUser(@Body User RegisterUser);
+        @POST("/api/user")
+        Call<Void> registerUser(@Body User RegisterUser);
 
         @POST("/api/getmessages")
         Call<ArrayList<Message>> getMessages(@Body MessageRequest msgreq);
