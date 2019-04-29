@@ -6,7 +6,7 @@
 
 
     <!-- NavBar Strings -->
-    <string name="nav_header">Navbar temp text</string>
+    <string name="nav_header">Navigation menu</string>
     <string name="nav_add_message">Add a message</string>
     <string name="nav_my_profile">My profile</string>
     <string name="nav_settings">Settings</string>
