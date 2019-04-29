@@ -55,7 +55,7 @@ public class UserProfileActivity extends AppCompatActivity {
         cachesfound_num.setText(user.getCachesFound());
 
         distancewalked_num = findViewById(R.id.distancewalked_num);
-        distancewalked_num.setText(user.getDistanceWalked() + " Kilometers");
+        distancewalked_num.setText(String.format("%.2f", user.getDistanceWalked()) + " Kilometers");
     }
 
     @Override

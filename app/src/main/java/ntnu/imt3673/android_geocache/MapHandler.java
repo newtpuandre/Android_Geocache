@@ -102,9 +102,8 @@ public class MapHandler{
         double distance = greatCircleInMeters(lastPos, curpos);
         if (distance > 10) { //Is distance moved greater than 10 meters?
             Log.d("app1", "Moved more than 10 meters");
-
             //Update users distance walked.
-            user.updateDistance(distance * 1000);
+            user.updateDistance(greatCircleInKilometers(lastPos.latitude, lastPos.longitude, curpos.latitude, curpos.longitude));
             //Load new markers from db based on location
             updateMarkers();
         }
