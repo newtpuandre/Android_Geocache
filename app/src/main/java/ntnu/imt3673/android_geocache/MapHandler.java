@@ -257,9 +257,11 @@ public class MapHandler{
      */
 
     public void addLocation(String messageID,String message, LatLng pos){
+        Log.d("app1", "addLocation "+ messageID);
         Marker t;
         t = mMap.addMarker(new MarkerOptions().position(pos).title(message));
-        MapMarker temp = new MapMarker(messageID, pos.longitude, pos.latitude,t);
+        MapMarker temp = new MapMarker(messageID, pos.longitude, pos.latitude, t);
+        t.setTag(temp);
         markers.add(temp);
     }
 

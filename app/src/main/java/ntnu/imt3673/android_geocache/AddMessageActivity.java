@@ -61,7 +61,8 @@ public class AddMessageActivity extends AppCompatActivity {
                             Call<String> call = taskService.postMessage(tempMsg);
                             try {
                                 String ret = call.execute().body();
-                                if (!ret.contentEquals("")) {
+                                Log.d("app1", "RESPONSE: "+ ret);
+                                if (ret.equals("")) {
                                     Log.d("app1", "Error posting message");
                                 } else {
                                     addMessage(ret);
@@ -92,6 +93,7 @@ public class AddMessageActivity extends AppCompatActivity {
     }
 
     private void addMessage(String messageID){
+        Log.d("app1", "addMsg MESSAGEID: " + messageID);
         Intent returnIntent = new Intent();
         returnIntent.putExtra("message", message.getText().toString());
         returnIntent.putExtra("messageID", messageID);
