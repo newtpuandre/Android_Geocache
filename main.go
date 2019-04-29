@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strconv"
 	"context"
 	"fmt"
 	"log"
@@ -18,7 +19,7 @@ import (
 
 const (
 	dbURL       = "mongodb://test_user:test123@ds135726.mlab.com:35726/map_messages"
-	searchRange = 0.1
+	searchRange = 0.5
 )
 
 var startTime time.Time
@@ -56,8 +57,6 @@ func getMessages(c *gin.Context) {
 	var messageRequest MessageRequest
 	c.BindJSON(&messageRequest)
 
-	println(messageRequest.Lat)
-
 	var messages []Message
 	mdb := client.Database("map_messages").Collection("Messages")
 
@@ -89,8 +88,6 @@ func getMessages(c *gin.Context) {
 	
 	cursor.All(context.TODO(), &messages)
 
-	println(messages[0].Lat)
-
 	//dummy reply
 	/*messages := []Message{
 		Message{
@@ -118,8 +115,14 @@ func getMessages(c *gin.Context) {
 	
 	var returnMessages []Message
 
-	for _, message := range messages {
-		if(message.Lat >= messageRequest.Lat-searchRange && message.Lat <= messageRequest.Long+searchRange &&
+	for iter, message := range messages {
+
+		//debug printing
+		println("message No." + strconv.Itoa(iter))
+		println(message.Lat)
+		println(message.Long)
+
+		if(message.Lat >= messageRequest.Lat-searchRange && message.Lat <= messageRequest.Lat+searchRange &&
 			message.Long >= messageRequest.Long-searchRange && message.Long <= messageRequest.Long+searchRange){
 				returnMessages = append(returnMessages, message)
 			}
@@ -158,13 +161,22 @@ func getUserInfo(c *gin.Context) {
 
 	filter := bson.D{{"_id", uID.UserID}}
 
-	var result User
+
+	type retUser struct {
+		FullName string `json:"fullName"`
+		UserID   string `json:"userID" bson:"_id"`
+		UserName string `json:"userName"`
+		CachesFound    int `json:"cachesFound"`
+		DistanceWalked int `json:"distanceWalked"`
+	}
+	var result retUser
 	err := client.Database("map_messages").Collection("Users").FindOne(context.TODO(), filter).Decode(&result)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	//return user
+	c.JSON(http.StatusOK, result)
 }
 
 //User creation
