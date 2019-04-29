@@ -23,11 +23,13 @@ import com.google.android.gms.maps.model.Marker;
 
 import ntnu.imt3673.android_geocache.data.LoginDataSource;
 import ntnu.imt3673.android_geocache.data.LoginRepository;
+import ntnu.imt3673.android_geocache.ui.login.LoginActivity;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
 
     static final int ADD_MESSAGE_REQUEST = 0;
     static final int SETTINGS_MENU = 1;
+    static final int RESULT_LOGOUT = 10;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
 
 
@@ -89,8 +91,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 break;
             case SETTINGS_MENU:
                 //TODO: Only update stuff if things were changed.
-                if (resultCode == RESULT_OK) {
-                    gMapsHandler.updateMarkers();
+                switch(resultCode){
+                    case RESULT_OK:
+                        gMapsHandler.updateMarkers();
+                        break;
+                    case RESULT_LOGOUT:
+                        loginRepo.logout();
+                        Intent loginIntent = new Intent(this, LoginActivity.class);
+
+                        //Destroy maps activity and start login activity
+                        loginIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(loginIntent);
+                        break;
                 }
                 break;
         }

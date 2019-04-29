@@ -1,11 +1,12 @@
 <resources>
-    <string name="app_name">Android_Geocache</string>
+    <string name="app_name">Android Geocache</string>
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_add_message">Add a Message</string>
     <string name="title_activity_profile">My profile</string>
 
+
     <!-- NavBar Strings -->
-    <string name="nav_header">Navbar temp text</string>
+    <string name="nav_header">Navigation menu</string>
     <string name="nav_add_message">Add a message</string>
     <string name="nav_my_profile">My profile</string>
     <string name="nav_settings">Settings</string>

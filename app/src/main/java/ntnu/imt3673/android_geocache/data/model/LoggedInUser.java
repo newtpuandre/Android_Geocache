@@ -68,8 +68,8 @@ public class LoggedInUser implements Parcelable {
         return String.valueOf(this.cachesFound);
     }
 
-    public String getDistanceWalked(){
-        return String.valueOf(this.distanceWalked);
+    public double getDistanceWalked(){
+        return this.distanceWalked;
     }
 
     public Map<Integer, Boolean> getMyAchievements(){
