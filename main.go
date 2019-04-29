@@ -18,26 +18,26 @@ import (
 
 const (
 	dbURL       = "mongodb://test_user:test123@ds135726.mlab.com:35726/map_messages"
-	searchRange = 10
+	searchRange = 0.1
 )
 
 var startTime time.Time
 var client mongo.Client
 
 type Message struct {
-	MessageID string  `json:"messageID"`
-	Timestamp string  `json:"timestamp"`
-	UserID    string  `json:"userID"`
-	Message   string  `json:"message"`
-	ImageURL  string  `json:"imageURL"`
-	Long      float32 `json:"long"`
-	Lat       float32 `json:"lat"`
-	MType     int     `json:"mType"` //private/friend/public messages
+	MessageID string  `json:"messageID" bson:"_id"`
+	Timestamp string  `json:"timestamp" bson:"timestamp"`
+	UserID    string  `json:"userID" bson:"userid"`
+	Message   string  `json:"message" bson:"message"`
+	ImageURL  string  `json:"imageURL" bson:"imageurl"`
+	Long      float32 `json:"long" bson:"long"`
+	Lat       float32 `json:"lat" bson:"lat"`
+	MType     int     `json:"mType" bson:"mtype"` //private/friend/public messages
 }
 
 type User struct {
 	FullName string `json:"fullName"`
-	UserID   string `json:"userID"`
+	UserID   string `json:"userID" bson:"_id"`
 	UserName string `json:"userName"`
 	PassHash string `json:"passHash"`
 	//FriendIDs      []string `json:"friendIDs"`
@@ -46,25 +46,53 @@ type User struct {
 }
 
 type MessageRequest struct {
-	UserID string  `json:"userID"`
+	UserID string  `json:"userID" bson:"_id"`
 	Long   float32 `json:"long"`
 	Lat    float32 `json:"lat"`
 }
 
 func getMessages(c *gin.Context) {
-	//client := returnClient()
+	client := returnClient()
 	var messageRequest MessageRequest
 	c.BindJSON(&messageRequest)
-	/*mdb := client.Database("map_messages").Collection("Messages")
 
-	mdb.Aggregate(
-		{$unwind: "$Messages"},
-		{$match: {"Messages.lat": {"$gte":messageRequest.lat-range, "$lte":messageRequest.lat+range}}},
-		{$match: {"Messages.long": {"$gte":messageRequest.long-range, "$lte":messageRequest.long+range}}}
-	)*/
+	println(messageRequest.Lat)
+
+	var messages []Message
+	mdb := client.Database("map_messages").Collection("Messages")
+
+	//attempt to get query from db rather than fetching all/filtering in go
+	/*b1 := bson.M{"$unwind": "$Messages"}
+	b2 := bson.M{"$match": bson.M{"Messages.lat": bson.M{
+		"$gt":messageRequest.Lat-searchRange, 
+		"$lt":messageRequest.Lat+searchRange}}}
+	
+	b3 := bson.M{"$match": bson.M{"Messages.long": bson.M{
+		"$gt":messageRequest.Long-searchRange, 
+		"$lt":messageRequest.Long+searchRange}}}
+
+	operations := []bson.M{b1,b2,b3}
+	cursor,err := mdb.Aggregate(context.TODO(), operations)
+	//cursor,err := mdb.Find(context.TODO(), operations)
+	if err != nil {
+		log.Fatal(err)
+	}
+	cursor.All(context.TODO(), &messages)*/
+	//end of attempt
+
+	filter := bson.M{}
+
+	cursor, err := mdb.Find(context.TODO(), filter)
+	if err != nil {
+		log.Fatal(err)
+	}
+	
+	cursor.All(context.TODO(), &messages)
+
+	println(messages[0].Lat)
 
 	//dummy reply
-	messages := []Message{
+	/*messages := []Message{
 		Message{
 			MessageID: "TestMessage1",
 			Timestamp: time.Now().String(),
@@ -85,10 +113,19 @@ func getMessages(c *gin.Context) {
 			Lat:       messageRequest.Lat + 0.001,
 			MType:     0,
 		},
-	}
+	}*/ 
 	//end of dummy reply
+	
+	var returnMessages []Message
 
-	c.JSON(http.StatusOK, messages)
+	for _, message := range messages {
+		if(message.Lat >= messageRequest.Lat-searchRange && message.Lat <= messageRequest.Long+searchRange &&
+			message.Long >= messageRequest.Long-searchRange && message.Long <= messageRequest.Long+searchRange){
+				returnMessages = append(returnMessages, message)
+			}
+	}
+
+	c.JSON(http.StatusOK, returnMessages)
 }
 
 func postMessage(c *gin.Context) {
@@ -113,13 +150,13 @@ func getUserInfo(c *gin.Context) {
 	client := returnClient()
 
 	type userID struct {
-		userID string `json:"userID"`
+		UserID string `json:"userID" bson:"_id"`
 	}
 
 	var uID userID
 	c.BindJSON(&uID)
 
-	filter := bson.D{{"userID", uID.userID}}
+	filter := bson.D{{"_id", uID.UserID}}
 
 	var result User
 	err := client.Database("map_messages").Collection("Users").FindOne(context.TODO(), filter).Decode(&result)
