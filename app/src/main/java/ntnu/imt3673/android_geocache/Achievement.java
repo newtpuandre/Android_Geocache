@@ -6,7 +6,7 @@ public class Achievement{
     private String title;
     private String summary;
     private int cacheCriteria; //Amount of caches needed to be found for achievement.
-    private int distanceCriteria; //Amount of distance needed to be walked for achievement.
+    private double distanceCriteria; //Amount of distance needed to be walked for achievement.
     private boolean unlocked = false;
 
     public Achievement(int pId,String pTitle, String pSummary, int pCacheCriteria, int pDistanceCriteria){
@@ -31,7 +31,7 @@ public class Achievement{
         return cacheCriteria;
     }
 
-    public int getDistanceCriteria() {
+    public double getDistanceCriteria() {
         return distanceCriteria;
     }
 

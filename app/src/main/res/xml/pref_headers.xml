@@ -23,6 +23,7 @@
         android:title="About" />
 
     <header
+        android:fragment="ntnu.imt3673.android_geocache.SettingsActivity$LogoutPreferenceFragment"
         android:icon="@drawable/ic_exit_to_app_button"
         android:title="Sign out"
         />

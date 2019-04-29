@@ -32,6 +32,7 @@ import java.util.List;
  */
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
+
     /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
@@ -99,6 +100,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         closeActivity();
     }
 
+    public void logout(){
+        Intent returnIntent = new Intent();
+        setResult(MapsActivity.RESULT_LOGOUT, returnIntent);
+        finish();
+    }
+
     /**
      * Set up the {@link android.app.ActionBar}, if the API is available.
      */
@@ -161,7 +168,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 || MapPreferenceFragment.class.getName().equals(fragmentName)
                 || DataSyncPreferenceFragment.class.getName().equals(fragmentName)
                 || NotificationPreferenceFragment.class.getName().equals(fragmentName)
-                || AboutPreferenceFragment.class.getName().equals(fragmentName);
+                || AboutPreferenceFragment.class.getName().equals(fragmentName)
+                || LogoutPreferenceFragment.class.getName().equals(fragmentName);
     }
 
     /**
@@ -263,8 +271,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_about);
             setHasOptionsMenu(true);
-
         }
+
 
         @Override
         public boolean onOptionsItemSelected(MenuItem item) {
@@ -276,4 +284,31 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             return super.onOptionsItemSelected(item);
         }
     }
+
+    /**
+     * This fragment shows data and sync preferences only. It is used when the
+     * activity is showing a two-pane settings UI.
+     */
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public static class LogoutPreferenceFragment extends PreferenceFragment {
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            //addPreferencesFromResource(R.xml.pref_about);
+            //setHasOptionsMenu(true);
+            logout();
+        }
+
+        public void logout(){
+            Intent returnIntent = new Intent();
+            getActivity().setResult(MapsActivity.RESULT_LOGOUT, returnIntent);
+            getActivity().finish();
+        }
+
+        @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
 }
