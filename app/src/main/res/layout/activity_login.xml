@@ -109,6 +109,19 @@
             android:layout_gravity="start"
             android:enabled="true"
             android:text="@string/action_register_short" />
+
+        <TextView
+            android:id="@+id/enablePerm_txt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:gravity="center"
+            android:paddingTop="30dp"
+            android:text="Click here to enable location permissions"
+            android:textColor="@color/background"
+            android:textSize="18sp"
+            android:textStyle="italic"
+            android:visibility="invisible" />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

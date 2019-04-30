@@ -1,13 +1,17 @@
 package ntnu.imt3673.android_geocache.ui.login;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -26,6 +30,10 @@ import ntnu.imt3673.android_geocache.ui.register.RegisterActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
+
+    private boolean haveLocationPerm = false;
+
     private LoginViewModel loginViewModel;
 
     private ProgressBar loadingProgressBar;
@@ -34,6 +42,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText emailEditText;
     private EditText passwordEditText;
+
+    private TextView permHelp;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,6 +57,8 @@ public class LoginActivity extends AppCompatActivity {
         registerButton = findViewById(R.id.register);
         loginButton = findViewById(R.id.login);
         loadingProgressBar = findViewById(R.id.loading);
+
+        permHelp = findViewById(R.id.enablePerm_txt);
 
         loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
             @Override
@@ -86,8 +98,11 @@ public class LoginActivity extends AppCompatActivity {
         passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE && loginViewModel.isValid()) {
+                if ((actionId == EditorInfo.IME_ACTION_DONE && loginViewModel.isValid()) && haveLocationPerm) {
                     new LoginTask().execute(emailEditText.getText().toString(), passwordEditText.getText().toString());
+                } else {
+                    Toast.makeText(LoginActivity.this, "Location permissions are required!", Toast.LENGTH_SHORT).show();
+                    permHelp.setVisibility(View.VISIBLE);
                 }
                 return false;
             }
@@ -97,6 +112,10 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!haveLocationPerm) {
+                    Toast.makeText(LoginActivity.this, "Location permissions are required! Please enable it before you can proceed", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 if(loginViewModel.isValid()) {
                     new LoginTask().execute(emailEditText.getText().toString(), passwordEditText.getText().toString());
                 }
@@ -106,10 +125,24 @@ public class LoginActivity extends AppCompatActivity {
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!haveLocationPerm) {
+                    Toast.makeText(LoginActivity.this, "Location permissions are required! Please enable it before you can proceed", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 Intent registerIntent = new Intent(LoginActivity.this.getApplication(), RegisterActivity.class);
                 startActivity(registerIntent);
             }
         });
+
+        permHelp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkForPermissions();
+            }
+        });
+
+        //Request permissions
+        checkForPermissions();
     }
 
     private void onFormChanged(LoginFormState loginFormState) {
@@ -170,6 +203,36 @@ public class LoginActivity extends AppCompatActivity {
             emailEditText.setEnabled(true);
             passwordEditText.setEnabled(true);
             loadingProgressBar.setVisibility(View.GONE);
+        }
+    }
+
+    public void checkForPermissions(){
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        } else {
+            haveLocationPerm = true;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        //TODO: Handle user declining the permission prompt.
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    //Permissions was granted.
+                    haveLocationPerm = true;
+                    permHelp.setVisibility(View.INVISIBLE);
+                } else {
+                    //Ask for permissions again
+                    permHelp.setVisibility(View.VISIBLE);
+                    haveLocationPerm = false;
+                }
+                return;
+            }
         }
     }
 
