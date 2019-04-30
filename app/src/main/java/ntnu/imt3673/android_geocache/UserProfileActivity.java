@@ -20,7 +20,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
     private TextView username_lbl, cachesfound_num, distancewalked_num;
     private RecyclerView recyclerView;
-    private ArrayList<Achievement> test;
+    private ArrayList<Achievement> achievements;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,12 +31,12 @@ public class UserProfileActivity extends AppCompatActivity {
         LoggedInUser user = data.getParcelable("user");
 
 
-        this.test = AchievementHandler.returnAchievementList();
+        this.achievements = AchievementHandler.returnAchievementList();
         setAchievementStatus(user);
 
         recyclerView = findViewById(R.id.my_recycler_view);
 
-        AchievementViewAdapter adapter = new AchievementViewAdapter(test);
+        AchievementViewAdapter adapter = new AchievementViewAdapter(achievements);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
@@ -76,9 +76,9 @@ public class UserProfileActivity extends AppCompatActivity {
         Map<Integer,Boolean> temp = pUser.getMyAchievements();
         for (Map.Entry<Integer,Boolean> entry : temp.entrySet()) {
             int id = entry.getKey();
-            for(int i = 0; i < test.size(); i++ ){
-                if (test.get(i).getId() == id) {
-                    test.get(i).setUnlocked(true);
+            for(int i = 0; i < achievements.size(); i++ ){
+                if (achievements.get(i).getId() == id) {
+                    achievements.get(i).setUnlocked(true);
                 }
             }
         }

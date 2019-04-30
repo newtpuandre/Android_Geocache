@@ -51,6 +51,9 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory()).get(LoginViewModel.class);
 
+        //Request permissions
+        checkForPermissions();
+
         emailEditText = findViewById(R.id.txt_email);
         passwordEditText = findViewById(R.id.txt_password);
 
@@ -141,8 +144,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        //Request permissions
-        checkForPermissions();
     }
 
     private void onFormChanged(LoginFormState loginFormState) {
@@ -217,7 +218,6 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        //TODO: Handle user declining the permission prompt.
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
                 // If request is cancelled, the result arrays are empty.

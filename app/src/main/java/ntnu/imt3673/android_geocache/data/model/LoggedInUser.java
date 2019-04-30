@@ -47,6 +47,19 @@ public class LoggedInUser implements Parcelable {
         this.updateDistance(52);
     }
 
+    //Only used when searching for a user!
+    public LoggedInUser(String userId, String displayName, double distanceWalked, int cachesFound) {
+        this.userId = userId;
+        this.displayName = displayName;
+        this.myAchievements = new HashMap<>();
+
+        this.cachesFound = 0;
+        this.distanceWalked = 0;
+        this.updateDistance(distanceWalked);
+        this.updateCaches(cachesFound);
+
+    }
+
     protected LoggedInUser(Parcel in) {
         this.userId = in.readString();
         this.displayName = in.readString();

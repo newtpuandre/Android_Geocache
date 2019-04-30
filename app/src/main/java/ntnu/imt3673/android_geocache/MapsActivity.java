@@ -30,7 +30,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     static final int ADD_MESSAGE_REQUEST = 0;
     static final int SETTINGS_MENU = 1;
     static final int RESULT_LOGOUT = 10;
-    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
 
 
     private DrawerLayout drawerLayout;
@@ -154,6 +153,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 profileIntent.putExtra("user", loginRepo.returnUser());
                 startActivity(profileIntent);
                 break;
+
+            case R.id.nav_user_search:
+                Intent usersearchIntent = new Intent(MapsActivity.this, SearchUserActivity.class);
+                startActivity(usersearchIntent);
         }
 
         drawerLayout.closeDrawers();
