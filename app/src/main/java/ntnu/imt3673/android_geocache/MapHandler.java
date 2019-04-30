@@ -7,6 +7,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -21,8 +22,6 @@ import java.util.ArrayList;
 import ntnu.imt3673.android_geocache.api.ApiHandler;
 import ntnu.imt3673.android_geocache.api.model.Message;
 import ntnu.imt3673.android_geocache.api.model.MessageRequest;
-import ntnu.imt3673.android_geocache.data.LoginDataSource;
-import ntnu.imt3673.android_geocache.data.LoginRepository;
 import ntnu.imt3673.android_geocache.data.model.LoggedInUser;
 import retrofit2.Call;
 
@@ -44,7 +43,6 @@ public class MapHandler{
 
     private ArrayList<MapMarker> markers;
     private ArrayList<MapMarker> visitedMarkers;
-
     /**
      * Constructor
      * <p>
@@ -59,8 +57,9 @@ public class MapHandler{
      * @param context
      * @param user
      */
+
     @SuppressLint("MissingPermission")
-    MapHandler(GoogleMap pMap, GPSHandler pGps, Context context, LoggedInUser user, Activity mActivity){
+    MapHandler(GoogleMap pMap, GPSHandler pGps, Context context, LoggedInUser user, final Activity mActivity){
         this.mMap = pMap;
         this.mGps = pGps;
         this.user = user;
@@ -164,6 +163,7 @@ public class MapHandler{
                         }
 
                         if (!found) {
+                            Log.d("app1", "Added new locations");
                             loc = new LatLng(finalData.get(i).getLatitude(), finalData.get(i).getLongitude());
                             t = mMap.addMarker(new MarkerOptions().position(loc).title(finalData.get(i).getMessage()));
 

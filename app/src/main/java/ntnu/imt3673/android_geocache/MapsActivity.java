@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -14,6 +15,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -43,12 +45,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LoginRepository loginRepo;
     private LoginDataSource loginData;
 
+    private Handler handler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
         mSettingsHandler = new SettingsHandler(this.getApplicationContext());
+
+        handler = new Handler();
 
         //Login setup
         loginData = new LoginDataSource();
@@ -183,6 +189,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 return false;
             }
         });
+
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                new Thread(new Runnable() {
+                    public void run() {
+                gMapsHandler.loadLocations(MapsActivity.this); //Get new markers from db.
+                    }}).start();
+                handler.postDelayed(this, 120000); //now is every 2 minutes
+            }
+        }, 120000); //Every 120000 ms (2 minutes)
 
     }
 
