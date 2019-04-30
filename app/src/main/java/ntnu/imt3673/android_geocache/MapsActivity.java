@@ -167,7 +167,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        gMapsHandler = new MapHandler(googleMap, mGPS, this, loginRepo.returnUser());
+        gMapsHandler = new MapHandler(googleMap, mGPS, this, loginRepo.returnUser(), this);
 
         new Thread(new Runnable() {
             public void run() {
@@ -185,6 +185,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
 
     }
+
 
     /**
      * Checks For Permissions

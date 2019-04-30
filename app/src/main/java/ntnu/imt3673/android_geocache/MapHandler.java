@@ -34,10 +34,13 @@ public class MapHandler{
     static double PI_RAD = Math.PI / 180.0;
 
     private LatLng lastPos;
+    private LatLng lastMarkerUpdate;
 
     private GoogleMap mMap;
     private GPSHandler mGps;
     private LoggedInUser user;
+
+    private Activity mActivity;
 
     private ArrayList<MapMarker> markers;
     private ArrayList<MapMarker> visitedMarkers;
@@ -57,10 +60,11 @@ public class MapHandler{
      * @param user
      */
     @SuppressLint("MissingPermission")
-    MapHandler(GoogleMap pMap, GPSHandler pGps, Context context, LoggedInUser user){
+    MapHandler(GoogleMap pMap, GPSHandler pGps, Context context, LoggedInUser user, Activity mActivity){
         this.mMap = pMap;
         this.mGps = pGps;
         this.user = user;
+        this.mActivity = mActivity;
         mMap.setMyLocationEnabled(true);
         markers = new ArrayList<>();
 
@@ -106,6 +110,11 @@ public class MapHandler{
             user.updateDistance(greatCircleInKilometers(lastPos.latitude, lastPos.longitude, curpos.latitude, curpos.longitude));
             //Load new markers from db based on location
             updateMarkers();
+
+            if (greatCircleInMeters(lastMarkerUpdate, lastPos) > 10000) { //Load more markers when user moved 10 km
+                startLoading();
+            }
+
         }
         //Update last pos to new position.
         lastPos = new LatLng(location.getLatitude(), location.getLongitude());
@@ -125,6 +134,7 @@ public class MapHandler{
         //Load data from DB
         ApiHandler.TaskService taskService = ApiHandler.createService(ApiHandler.TaskService.class);
         LatLng temp = mGps.getCurrentLocation();
+        lastMarkerUpdate = temp;
         MessageRequest tempReq = new MessageRequest("temp", temp.longitude, temp.latitude);
         Call<ArrayList<Message>> call = taskService.getMessages(tempReq);
         ArrayList<Message> data = null;
@@ -145,15 +155,26 @@ public class MapHandler{
                 MapMarker temp;
                 if (finalData != null) {
                     for (int i = 0; i < finalData.size(); i++) {
-                        loc = new LatLng(finalData.get(i).getLatitude(), finalData.get(i).getLongitude());
-                        t = mMap.addMarker(new MarkerOptions().position(loc).title(finalData.get(i).getMessage()));
+                        boolean found = false;
 
-                        temp = new MapMarker(finalData.get(i).getMessageID(), finalData.get(i).getLongitude(),
-                                finalData.get(i).getLatitude(), t);
+                        for(int j = 0; j < markers.size(); j++) {
+                            if (markers.get(j).getMessageID().equals(finalData.get(i).getMessageID())) {
+                                found = true;
+                            }
+                        }
 
-                        //Keep a refrence of the object for later.
-                        t.setTag(temp);
-                        markers.add(temp);
+                        if (!found) {
+                            loc = new LatLng(finalData.get(i).getLatitude(), finalData.get(i).getLongitude());
+                            t = mMap.addMarker(new MarkerOptions().position(loc).title(finalData.get(i).getMessage()));
+
+                            temp = new MapMarker(finalData.get(i).getMessageID(), finalData.get(i).getLongitude(),
+                                    finalData.get(i).getLatitude(), t);
+
+                            //Keep a refrence of the object for later.
+                            t.setTag(temp);
+                            markers.add(temp);
+
+                        }
                     }
                     updateMarkers();
                 }
@@ -164,6 +185,13 @@ public class MapHandler{
         Load markers from db into markers array.
         Loop over array and check which are supposed to be loaded (by radius) Use function updateMarkers
         */
+    }
+
+    public void startLoading(){
+        new Thread(new Runnable() {
+            public void run() {
+                loadLocations(mActivity);
+            }}).start();
     }
 
 
