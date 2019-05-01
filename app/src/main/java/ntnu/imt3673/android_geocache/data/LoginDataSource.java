@@ -4,6 +4,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import ntnu.imt3673.android_geocache.api.ApiHandler;
 import ntnu.imt3673.android_geocache.api.model.User;
@@ -37,19 +38,18 @@ public class LoginDataSource {
         if (LoggedIn) {
             Log.d("app1", "LoginData:" + retUser.toString());
             LoggedInUser newUser = new LoggedInUser(retUser.getUserID(),
-                    retUser.getfullName());
-            newUser.updateCaches(retUser.getCachesFound());
-            newUser.updateDistance(retUser.getDistanceWalked());
+                    retUser.getfullName(), retUser.getDistanceWalked(), retUser.getCachesFound());
             return new Result.Success<>(newUser);
         } else {
             return new Result.Error(new IOException("Error logging in"));
         }
     }
 
-    public Result<LoggedInUser> register(String name, String email, String password, String confirmPassword) {
+    public Result<LoggedInUser> register(String name, String email, String password, String confirmedpassword) {
         try {
             ApiHandler.TaskService taskService = ApiHandler.createService(ApiHandler.TaskService.class);
-            User tempuser = new User("", email, password, name, 0, 0);
+            ArrayList<String> empty = new ArrayList<>();
+            User tempuser = new User("", email, password, name, empty, 0);
             Call<Void> call = taskService.registerUser(tempuser);
             try {
                 call.execute();

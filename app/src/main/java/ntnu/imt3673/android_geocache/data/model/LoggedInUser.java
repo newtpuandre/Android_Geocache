@@ -2,12 +2,21 @@ package ntnu.imt3673.android_geocache.data.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import ntnu.imt3673.android_geocache.AchievementHandler;
+import ntnu.imt3673.android_geocache.MapsActivity;
+import ntnu.imt3673.android_geocache.api.ApiHandler;
+import ntnu.imt3673.android_geocache.api.model.DistUpdate;
+import ntnu.imt3673.android_geocache.api.model.MUpdate;
+import ntnu.imt3673.android_geocache.api.model.User;
+import ntnu.imt3673.android_geocache.api.model.loginRequest;
+import retrofit2.Call;
 
 /**
  * Data class that captures user information for logged in users retrieved from LoginRepository
@@ -18,7 +27,7 @@ public class LoggedInUser implements Parcelable {
     private String displayName;
 
     private double distanceWalked; //In Kilometers
-    private int cachesFound;
+    private ArrayList<String> cachesFound;
 
     //Contains achievement ID (Integer) and True/false if it is unlocked (Bool)
     private Map<Integer,Boolean> myAchievements;
@@ -34,23 +43,23 @@ public class LoggedInUser implements Parcelable {
         //this.myAchievements.put(2, true);
 
         //Load this data from DB
-        this.cachesFound = 0;
+        this.cachesFound = new ArrayList<>();
         this.distanceWalked = 0;
 
-        this.updateCaches(34);
-        this.updateDistance(52);
+        /*this.updateCaches(34);
+        this.updateDistance(52);*/
     }
 
     //Only used when searching for a user!
-    public LoggedInUser(String userId, String displayName, double distanceWalked, int cachesFound) {
+    public LoggedInUser(String userId, String displayName, double distanceWalked, ArrayList<String> cachesFound) {
         this.userId = userId;
         this.displayName = displayName;
         this.myAchievements = new HashMap<>();
 
-        this.cachesFound = 0;
+        this.cachesFound = new ArrayList<>();
         this.distanceWalked = 0;
-        this.updateDistance(distanceWalked);
-        this.updateCaches(cachesFound);
+        this.setDistance(distanceWalked);
+        this.setCaches(cachesFound);
 
     }
 
@@ -59,7 +68,7 @@ public class LoggedInUser implements Parcelable {
         this.displayName = in.readString();
         this.distanceWalked = in.readDouble();
         this.myAchievements = in.readHashMap(this.getClass().getClassLoader());
-        this.cachesFound = in.readInt();
+        this.cachesFound = in.readArrayList(this.getClass().getClassLoader());
     }
 
 
@@ -71,8 +80,8 @@ public class LoggedInUser implements Parcelable {
         return displayName;
     }
 
-    public String getCachesFound(){
-        return String.valueOf(this.cachesFound);
+    public ArrayList<String> getCachesFound(){
+        return this.cachesFound;
     }
 
     public double getDistanceWalked(){
@@ -91,17 +100,56 @@ public class LoggedInUser implements Parcelable {
         updateAchievements(ret);
 
         //If it does, unlock it and update db
+        new Thread(new Runnable() {
+            public void run() {
+                ApiHandler.TaskService taskService = ApiHandler.createService(ApiHandler.TaskService.class);
+                DistUpdate temp = new DistUpdate(userId, distanceWalked);
+                Call<Void> call = taskService.updateDistance(temp);
+                try {
+                    call.execute();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }}).start();
     }
 
-    public void updateCaches(int caches){
-        this.cachesFound += caches;
+    public void setDistance(double distance){
+        this.distanceWalked += distance;
 
         //Check if new value qualifies for new achievements
-        ArrayList<Integer> ret = AchievementHandler.meetCacheCriteria(this.cachesFound);
+        ArrayList<Integer> ret = AchievementHandler.meetDistanceCriteria(this.distanceWalked);
+        updateAchievements(ret);
+    }
+
+    public void updateCaches(ArrayList<String> caches){
+        this.cachesFound = caches;
+
+
+        //Check if new value qualifies for new achievements
+        ArrayList<Integer> ret = AchievementHandler.meetCacheCriteria(this.cachesFound.size());
         updateAchievements(ret);
 
+        new Thread(new Runnable() {
+            public void run() {
+                ApiHandler.TaskService taskService = ApiHandler.createService(ApiHandler.TaskService.class);
+                MUpdate temp = new MUpdate(userId, cachesFound);
+                Call<Void> call = taskService.updateMessages(temp);
+                try {
+                   call.execute();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }}).start();
+    }
 
-        //If it does, unlock it and update db
+    public void setCaches(ArrayList<String> caches){
+        for(int i = 0; i < caches.size(); i++) {
+            this.cachesFound.add(caches.get(i));
+        }
+
+        //Check if new value qualifies for new achievements
+        ArrayList<Integer> ret = AchievementHandler.meetCacheCriteria(this.cachesFound.size());
+        updateAchievements(ret);
     }
 
     public void updateAchievements(ArrayList<Integer> achivIds){
@@ -142,6 +190,6 @@ public class LoggedInUser implements Parcelable {
         dest.writeString(this.displayName);
         dest.writeDouble(this.distanceWalked);
         dest.writeMap(this.myAchievements);
-        dest.writeInt(this.cachesFound);
+        dest.writeList(this.cachesFound);
     }
 }

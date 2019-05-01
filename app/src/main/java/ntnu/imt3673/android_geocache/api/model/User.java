@@ -2,6 +2,8 @@ package ntnu.imt3673.android_geocache.api.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+
 public class User {
 
     @SerializedName("userID")
@@ -17,12 +19,12 @@ public class User {
     private String fullName;
 
     @SerializedName("cachesFound")
-    private Integer cachesFound;
+    private ArrayList<String> cachesFound;
 
     @SerializedName("distanceWalked")
-    private Integer distanceWalked;
+    private double distanceWalked;
 
-    public User(String userID, String userName, String passHash, String fullName, Integer cachesFound, Integer distanceWalked){
+    public User(String userID, String userName, String passHash, String fullName, ArrayList<String> cachesFound, double distanceWalked){
         this.userID = userID;
         this.userName = userName;
         this.passHash = passHash;
@@ -55,11 +57,9 @@ public class User {
 
     public void setPassHash(String passHash) { this.passHash = passHash; }
 
-    public Integer getCachesFound() { return cachesFound; }
+    public ArrayList<String> getCachesFound() { return cachesFound; }
 
-    public void setCachesFound(Integer cachesFound) { this.cachesFound = cachesFound; }
-
-    public Integer getDistanceWalked() { return distanceWalked; }
+    public double getDistanceWalked() { return distanceWalked; }
 
     public void setDistanceWalked(Integer distanceWalked) { this.distanceWalked = distanceWalked; }
 }

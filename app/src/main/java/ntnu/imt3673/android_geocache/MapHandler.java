@@ -42,7 +42,7 @@ public class MapHandler{
     private Activity mActivity;
 
     private ArrayList<MapMarker> markers;
-    private ArrayList<MapMarker> visitedMarkers;
+    private ArrayList<String> visitedMarkers;
     /**
      * Constructor
      * <p>
@@ -67,10 +67,9 @@ public class MapHandler{
         mMap.setMyLocationEnabled(true);
         markers = new ArrayList<>();
 
-        //Visited markers should be loaded from DB with users visited caches
-        //Might have to be loaded in the function call onMarkerClick if arraylist is empty
-        //to prevent crash
-        visitedMarkers = new ArrayList<>();
+
+        visitedMarkers = MapsActivity.loginRepo.returnUser().getCachesFound();
+
 
         // Acquire a reference to the system Location Manager
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
@@ -220,27 +219,27 @@ public class MapHandler{
     }
 
     public boolean onMarkerClick(Marker marker, LoggedInUser user) {
-        if ( visitedMarkers.size() == 0) {
+        if ( this.visitedMarkers.size() == 0) {
             MapMarker clickMark = (MapMarker) marker.getTag();
-            visitedMarkers.add(clickMark);
-            user.updateCaches(1);
+            this.visitedMarkers.add(clickMark.getMessageID());
+            user.updateCaches(this.visitedMarkers);
             return false;
         }
 
         boolean found = false;
 
         MapMarker clickMark = (MapMarker) marker.getTag();
-        for (int i = 0; i < visitedMarkers.size(); i++) {
-            MapMarker loopMark = visitedMarkers.get(i);
+        for (int i = 0; i < this.visitedMarkers.size(); i++) {
+            String loopMark = this.visitedMarkers.get(i);
 
-            if (loopMark.getMessageID() == clickMark.getMessageID()) {
+            if (loopMark.contains(clickMark.getMessageID())) {
                 found = true;
             }
         }
 
         if (!found) {
-            visitedMarkers.add(clickMark);
-            user.updateCaches(1);
+            this.visitedMarkers.add(clickMark.getMessageID());
+            user.updateCaches(this.visitedMarkers);
         }
 
 

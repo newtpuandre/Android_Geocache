@@ -14,10 +14,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.android.gms.maps.model.LatLng;
+
+import java.io.IOException;
 import java.util.ArrayList;
 
+import ntnu.imt3673.android_geocache.api.ApiHandler;
+import ntnu.imt3673.android_geocache.api.model.Message;
+import ntnu.imt3673.android_geocache.api.model.MessageRequest;
+import ntnu.imt3673.android_geocache.api.model.SearchUser;
 import ntnu.imt3673.android_geocache.api.model.User;
 import ntnu.imt3673.android_geocache.data.model.LoggedInUser;
+import retrofit2.Call;
 
 public class SearchUserActivity extends AppCompatActivity implements SearchViewAdapter.ItemClickListener{
 
@@ -26,6 +34,8 @@ public class SearchUserActivity extends AppCompatActivity implements SearchViewA
     private RecyclerView recyclerView;
 
     private ArrayList<User> searchResults;
+
+    private SearchViewAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +49,7 @@ public class SearchUserActivity extends AppCompatActivity implements SearchViewA
 
         searchResults = new ArrayList<>();
 
-        final SearchViewAdapter adapter = new SearchViewAdapter(searchResults);
+        adapter = new SearchViewAdapter(searchResults);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
@@ -61,16 +71,41 @@ public class SearchUserActivity extends AppCompatActivity implements SearchViewA
                     return;
                 }
                 searchResults.clear();
-                User tempuser = new User("temp", "andgun96@gmail.com", "", "Andre Testesen", 25, 55);
-                searchResults.add(tempuser);
-
-                tempuser = new User("temp", "Test@test.test", "", "Tester Testesen", 1785, 650);
-                searchResults.add(tempuser);
-
-                adapter.notifyDataSetChanged();
+                new Thread(new Runnable() {
+                    public void run() {
+                        SearchUser(searchPrompt.getText().toString());
+                    }}).start();
             }
         });
 
+    }
+
+    private void SearchUser(String searchQuery){
+
+        ApiHandler.TaskService taskService = ApiHandler.createService(ApiHandler.TaskService.class);
+        SearchUser tempReq = new SearchUser(searchQuery);
+        Call<User> call = taskService.searchUser(tempReq);
+        User temp = null;
+        try {
+            temp = call.execute().body();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if ( temp != null) {
+            searchResults.add(temp);
+        }
+
+        runOnUiThread(new Runnable(){
+            public void run() {
+                adapter.notifyDataSetChanged();
+            }
+        });
+                /*User tempuser = new User("temp", "andgun96@gmail.com", "", "Andre Testesen", 25, 55);
+                searchResults.add(tempuser);
+
+                tempuser = new User("temp", "Test@test.test", "", "Tester Testesen", 1785, 650);
+                searchResults.add(tempuser);*/
     }
 
     @Override

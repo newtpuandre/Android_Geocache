@@ -39,12 +39,12 @@ type Message struct {
 }
 
 type User struct {
-	FullName 		string 	`json:"fullName" bson:"fullname"`
-	UserID   		string 	`json:"userID" bson:"_id"`
-	UserName 		string 	`json:"userName" bson:"username"`
-	PassHash 		string 	`json:"passHash" bson:"passhash"`
-	CachesFound    	[]string`json:"cachesFound" bson:"cachesfound"`
-	DistanceWalked 	float64 `json:"distanceWalked" bson:"distancewalked"`
+	FullName       string   `json:"fullName" bson:"fullname"`
+	UserID         string   `json:"userID" bson:"_id"`
+	UserName       string   `json:"userName" bson:"username"`
+	PassHash       string   `json:"passHash" bson:"passhash"`
+	CachesFound    []string `json:"cachesFound" bson:"cachesfound"`
+	DistanceWalked float64  `json:"distanceWalked" bson:"distancewalked"`
 
 	//FriendIDs      []string `json:"friendIDs"`
 }
@@ -169,11 +169,11 @@ func getUserInfoByName(c *gin.Context) {
 	filter := bson.M{"username": name.UserName}
 
 	type retUser struct {
-		FullName       string `json:"fullName"`
-		UserID         string `json:"userID" bson:"_id"`
-		UserName       string `json:"userName"`
-		CachesFound    int    `json:"cachesFound"`
-		DistanceWalked int    `json:"distanceWalked"`
+		FullName       string   `json:"fullName"`
+		UserID         string   `json:"userID" bson:"_id"`
+		UserName       string   `json:"userName"`
+		CachesFound    []string `json:"cachesFound"`
+		DistanceWalked float64  `json:"distanceWalked"`
 	}
 	var result retUser
 	err := client.Database("map_messages").Collection("Users").FindOne(context.TODO(), filter).Decode(&result)
@@ -215,41 +215,41 @@ func postUser(c *gin.Context) {
 
 func updateMessagesRead(c *gin.Context) {
 	client := returnClient()
-	type MRead struct{
-		UserID string `json:"userID"`
+	type MRead struct {
+		UserID     string   `json:"userID"`
 		MessageIDs []string `json:"messageIDs"`
 	}
 	var mread MRead
 	c.Bind(&mread)
 
 	var user User
-	
+
 	err := client.Database("map_messages").Collection("Users").FindOne(context.TODO(), bson.M{"_id": mread.UserID}).Decode(&user)
 	if err != nil {
 		println(err.Error())
 	}
 
 	for _, mid := range mread.MessageIDs {
-		if(!stringInSlice(mid, user.CachesFound)){
+		if !stringInSlice(mid, user.CachesFound) {
 			user.CachesFound = append(user.CachesFound, mid)
 		}
 	}
 
-	client.Database("map_messages").Collection("Users").FindOneAndUpdate(context.Background(), bson.M{"_id":user.UserID}, bson.M{"$set": bson.M{"cachesfound": user.CachesFound}})
+	client.Database("map_messages").Collection("Users").FindOneAndUpdate(context.Background(), bson.M{"_id": user.UserID}, bson.M{"$set": bson.M{"cachesfound": user.CachesFound}})
 
 	c.Status(http.StatusOK)
 }
 
 func updateDistanceWalked(c *gin.Context) {
 	client := returnClient()
-	type DistWalked struct{
-		UserID string `json:"userID"`
+	type DistWalked struct {
+		UserID     string  `json:"userID"`
 		DistWalked float64 `json:"distanceWalked"`
 	}
 	var distWalked DistWalked
 	c.Bind(&distWalked)
 
-	client.Database("map_messages").Collection("Users").FindOneAndUpdate(context.Background(), bson.M{"_id":distWalked.UserID}, bson.M{"$set": bson.M{"distancewalked": distWalked.DistWalked}})
+	client.Database("map_messages").Collection("Users").FindOneAndUpdate(context.Background(), bson.M{"_id": distWalked.UserID}, bson.M{"$set": bson.M{"distancewalked": distWalked.DistWalked}})
 
 	c.Status(http.StatusOK)
 }
@@ -272,8 +272,8 @@ func userLogin(c *gin.Context) {
 		c.Status(http.StatusUnauthorized)
 	} else {
 		fmt.Printf("db user:\n%+v\n\nLogin info:\n%+v", user, loginInfo)
-		if(user.UserName == loginInfo.Username){
-		err = bcrypt.CompareHashAndPassword([]byte(user.PassHash), []byte(loginInfo.Password))
+		if user.UserName == loginInfo.Username {
+			err = bcrypt.CompareHashAndPassword([]byte(user.PassHash), []byte(loginInfo.Password))
 			if err != nil {
 				//wrong password
 				c.Status(http.StatusUnauthorized)
@@ -327,7 +327,7 @@ func returnClient() *mongo.Client {
 	return client
 }
 
-func stringInSlice (a string, list []string) bool {
+func stringInSlice(a string, list []string) bool {
 	for _, b := range list {
 		if b == a {
 			return true
@@ -353,8 +353,9 @@ func main() {
 		api.POST("/getmessages", getMessages) //fetch messages should return collection of available messages to user
 		api.POST("/message", postMessage)     //post a new message to db
 		api.POST("/userinfo", getUserInfo)    //fetch user information
-		api.POST("/user", postUser)           //create new user account
-		api.POST("/login", userLogin)         //log in user
+		api.POST("/getuser", getUserInfoByName)
+		api.POST("/user", postUser)   //create new user account
+		api.POST("/login", userLogin) //log in user
 		api.POST("/updatedistance", updateDistanceWalked)
 		api.POST("/updateMessages", updateMessagesRead)
 	}

@@ -52,7 +52,8 @@ public class UserProfileActivity extends AppCompatActivity {
         username_lbl.setText(user.getDisplayName());
 
         cachesfound_num = findViewById(R.id.cachefound_num);
-        cachesfound_num.setText(user.getCachesFound());
+        cachesfound_num.setText(String.valueOf(user.getCachesFound().size()));
+        Log.d("app1", "" + user.getCachesFound().size() + " " + user.getCachesFound().toString());
 
         distancewalked_num = findViewById(R.id.distancewalked_num);
         distancewalked_num.setText(String.format("%.2f", user.getDistanceWalked()) + " Kilometers");

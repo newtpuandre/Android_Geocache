@@ -2,8 +2,11 @@ package ntnu.imt3673.android_geocache.api;
 
 import java.util.ArrayList;
 
+import ntnu.imt3673.android_geocache.api.model.DistUpdate;
+import ntnu.imt3673.android_geocache.api.model.MUpdate;
 import ntnu.imt3673.android_geocache.api.model.Message;
 import ntnu.imt3673.android_geocache.api.model.MessageRequest;
+import ntnu.imt3673.android_geocache.api.model.SearchUser;
 import ntnu.imt3673.android_geocache.api.model.User;
 import ntnu.imt3673.android_geocache.api.model.loginRequest;
 import okhttp3.OkHttpClient;
@@ -61,6 +64,15 @@ public class ApiHandler {
 
         @POST("/api/message")
         Call<String> postMessage(@Body Message postMessage);
+
+        @POST("/api/updateMessages")
+        Call<Void> updateMessages(@Body MUpdate messageUpdate);
+
+        @POST("/api/updatedistance")
+        Call<Void> updateDistance(@Body DistUpdate distanceUpdate);
+
+        @POST("/api/getuser")
+        Call<User> searchUser(@Body SearchUser sUser);
 
     }
 
