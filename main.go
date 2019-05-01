@@ -37,7 +37,7 @@ type Message struct {
 }
 
 type User struct {
-	FullName string `json:"fullName"`
+	FullName string `json:"fullName" bson:"fullname"`
 	UserID   string `json:"userID" bson:"_id"`
 	UserName string `json:"userName"`
 	PassHash string `json:"passHash"`
@@ -159,7 +159,37 @@ func getUserInfo(c *gin.Context) {
 	var uID userID
 	c.BindJSON(&uID)
 
-	filter := bson.D{{"_id", uID.UserID}}
+	filter := bson.M{"_id": uID.UserID}
+
+
+	type retUser struct {
+		FullName string `json:"fullName"`
+		UserID   string `json:"userID" bson:"_id"`
+		UserName string `json:"userName"`
+		CachesFound    int `json:"cachesFound"`
+		DistanceWalked int `json:"distanceWalked"`
+	}
+	var result retUser
+	err := client.Database("map_messages").Collection("Users").FindOne(context.TODO(), filter).Decode(&result)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//return user
+	c.JSON(http.StatusOK, result)
+}
+
+func getUserInfoByName(c *gin.Context) {
+	client := returnClient()
+
+	type UserName struct {
+		FullName string `json:"fullName" bson:"fullname"`
+	}
+
+	var name UserName
+	c.BindJSON(&name)
+
+	filter := bson.M{"fullname": name.FullName}
 
 
 	type retUser struct {
@@ -187,13 +217,24 @@ func postUser(c *gin.Context) {
 	c.BindJSON(&user)
 
 	user.UserID = xid.New().String()
+	filter := bson.M{"fullname": user.FullName}
 
-	_, err := client.Database("map_messages").Collection("Users").InsertOne(context.TODO(), user)
+	var foundUser User
+	err := client.Database("map_messages").Collection("Users").FindOne(context.TODO(), filter).Decode(&foundUser)
 	if err != nil {
-		log.Fatal(err)
+		println(err.Error())
 	}
 
-	c.Status(http.StatusOK)
+	if(foundUser.FullName == user.FullName){
+		c.Status(http.StatusBadRequest)
+	}else{
+		_, err := client.Database("map_messages").Collection("Users").InsertOne(context.TODO(), user)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		c.Status(http.StatusOK)
+	}
 }
 
 /*
