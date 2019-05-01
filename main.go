@@ -1,12 +1,12 @@
 package main
 
 import (
-	"strconv"
 	"context"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -65,11 +65,11 @@ func getMessages(c *gin.Context) {
 	//attempt to get query from db rather than fetching all/filtering in go
 	/*b1 := bson.M{"$unwind": "$Messages"}
 	b2 := bson.M{"$match": bson.M{"Messages.lat": bson.M{
-		"$gt":messageRequest.Lat-searchRange, 
+		"$gt":messageRequest.Lat-searchRange,
 		"$lt":messageRequest.Lat+searchRange}}}
-	
+
 	b3 := bson.M{"$match": bson.M{"Messages.long": bson.M{
-		"$gt":messageRequest.Long-searchRange, 
+		"$gt":messageRequest.Long-searchRange,
 		"$lt":messageRequest.Long+searchRange}}}
 
 	operations := []bson.M{b1,b2,b3}
@@ -87,9 +87,9 @@ func getMessages(c *gin.Context) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	
+
 	cursor.All(context.TODO(), &messages)
-	
+
 	var returnMessages []Message
 
 	for iter, message := range messages {
@@ -99,10 +99,10 @@ func getMessages(c *gin.Context) {
 		println(message.Lat)
 		println(message.Long)
 
-		if(message.Lat >= messageRequest.Lat-searchRange && message.Lat <= messageRequest.Lat+searchRange &&
-			message.Long >= messageRequest.Long-searchRange && message.Long <= messageRequest.Long+searchRange){
-				returnMessages = append(returnMessages, message)
-			}
+		if message.Lat >= messageRequest.Lat-searchRange && message.Lat <= messageRequest.Lat+searchRange &&
+			message.Long >= messageRequest.Long-searchRange && message.Long <= messageRequest.Long+searchRange {
+			returnMessages = append(returnMessages, message)
+		}
 	}
 
 	c.JSON(http.StatusOK, returnMessages)
@@ -123,7 +123,7 @@ func postMessage(c *gin.Context) {
 		c.String(http.StatusBadRequest, "")
 	}
 
-	c.String(http.StatusOK, message.MessageID)
+	c.String(http.StatusOK, "\""+message.MessageID+"\"")
 }
 
 func getUserInfo(c *gin.Context) {
@@ -138,13 +138,12 @@ func getUserInfo(c *gin.Context) {
 
 	filter := bson.M{"_id": uID.UserID}
 
-
 	type retUser struct {
-		FullName string `json:"fullName"`
-		UserID   string `json:"userID" bson:"_id"`
-		UserName string `json:"userName"`
-		CachesFound    int `json:"cachesFound"`
-		DistanceWalked int `json:"distanceWalked"`
+		FullName       string `json:"fullName"`
+		UserID         string `json:"userID" bson:"_id"`
+		UserName       string `json:"userName"`
+		CachesFound    int    `json:"cachesFound"`
+		DistanceWalked int    `json:"distanceWalked"`
 	}
 	var result retUser
 	err := client.Database("map_messages").Collection("Users").FindOne(context.TODO(), filter).Decode(&result)
@@ -168,13 +167,12 @@ func getUserInfoByName(c *gin.Context) {
 
 	filter := bson.M{"fullname": name.FullName}
 
-
 	type retUser struct {
-		FullName string `json:"fullName"`
-		UserID   string `json:"userID" bson:"_id"`
-		UserName string `json:"userName"`
-		CachesFound    int `json:"cachesFound"`
-		DistanceWalked int `json:"distanceWalked"`
+		FullName       string `json:"fullName"`
+		UserID         string `json:"userID" bson:"_id"`
+		UserName       string `json:"userName"`
+		CachesFound    int    `json:"cachesFound"`
+		DistanceWalked int    `json:"distanceWalked"`
 	}
 	var result retUser
 	err := client.Database("map_messages").Collection("Users").FindOne(context.TODO(), filter).Decode(&result)
@@ -202,9 +200,9 @@ func postUser(c *gin.Context) {
 		println(err.Error())
 	}
 
-	if(foundUser.FullName == user.FullName){
+	if foundUser.FullName == user.FullName {
 		c.Status(http.StatusBadRequest)
-	}else{
+	} else {
 		user.PassHash = hashAndSaltPassword(user.PassHash)
 		_, err := client.Database("map_messages").Collection("Users").InsertOne(context.TODO(), user)
 		if err != nil {
@@ -221,7 +219,7 @@ func userLogin(c *gin.Context) {
 	}
 	var loginInfo LoginInfo
 	c.BindJSON(&loginInfo)
-	
+
 	var user User
 	filter := bson.M{"fullname": user.FullName}
 	err := client.Database("map_messages").Collection("Users").FindOne(context.TODO(), filter).Decode(&user)
@@ -291,11 +289,11 @@ func main() {
 
 	api := router.Group("/api")
 	{
-		api.POST("/getmessages", getMessages) 	//fetch messages should return collection of available messages to user
-		api.POST("/message", postMessage)     	//post a new message to db
-		api.GET("/user", getUserInfo)         	//fetch user information
-		api.POST("/user", postUser)           	//create new user account
-		api.POST("/login", userLogin)			//log in user
+		api.POST("/getmessages", getMessages) //fetch messages should return collection of available messages to user
+		api.POST("/message", postMessage)     //post a new message to db
+		api.GET("/user", getUserInfo)         //fetch user information
+		api.POST("/user", postUser)           //create new user account
+		api.POST("/login", userLogin)         //log in user
 	}
 
 	//Listens to environment declared port, using the subrouter handlers
