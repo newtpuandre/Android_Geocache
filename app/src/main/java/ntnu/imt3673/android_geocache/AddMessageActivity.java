@@ -2,25 +2,23 @@ package ntnu.imt3673.android_geocache;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import ntnu.imt3673.android_geocache.api.ApiHandler;
 import ntnu.imt3673.android_geocache.api.model.Message;
-import ntnu.imt3673.android_geocache.api.model.MessageRequest;
-import ntnu.imt3673.android_geocache.api.model.TestData;
 import retrofit2.Call;
 
 public class AddMessageActivity extends AppCompatActivity {
@@ -61,8 +59,10 @@ public class AddMessageActivity extends AppCompatActivity {
                             Call<String> call = taskService.postMessage(tempMsg);
                             try {
                                 String ret = call.execute().body();
-                                if (!ret.contentEquals("")) {
+                                Log.d("app1", "RESPONSE: "+ ret);
+                                if (ret.equals("")) {
                                     Log.d("app1", "Error posting message");
+                                    Toast.makeText(AddMessageActivity.this.getApplicationContext(), "Could not post message", Toast.LENGTH_LONG);
                                 } else {
                                     addMessage(ret);
                                 }
@@ -73,8 +73,6 @@ public class AddMessageActivity extends AppCompatActivity {
                             }
                         }}).start();
 
-                } else {
-                    //TODO: Give user an error
                 }
             }
         });
@@ -92,6 +90,7 @@ public class AddMessageActivity extends AppCompatActivity {
     }
 
     private void addMessage(String messageID){
+        Log.d("app1", "addMsg MESSAGEID: " + messageID);
         Intent returnIntent = new Intent();
         returnIntent.putExtra("message", message.getText().toString());
         returnIntent.putExtra("messageID", messageID);

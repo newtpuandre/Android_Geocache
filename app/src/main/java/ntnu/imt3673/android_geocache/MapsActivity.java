@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -14,6 +15,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -30,7 +32,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     static final int ADD_MESSAGE_REQUEST = 0;
     static final int SETTINGS_MENU = 1;
     static final int RESULT_LOGOUT = 10;
-    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
 
 
     private DrawerLayout drawerLayout;
@@ -44,12 +45,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LoginRepository loginRepo;
     private LoginDataSource loginData;
 
+    private Handler handler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
         mSettingsHandler = new SettingsHandler(this.getApplicationContext());
+
+        handler = new Handler();
 
         //Login setup
         loginData = new LoginDataSource();
@@ -67,8 +72,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
 
-        //Check for GPS permissions
-        checkForPermissions();
         mGPS = new GPSHandler((LocationManager) this.getSystemService(Context.LOCATION_SERVICE));
 
         // Setup map
@@ -156,6 +159,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 profileIntent.putExtra("user", loginRepo.returnUser());
                 startActivity(profileIntent);
                 break;
+
+            case R.id.nav_user_search:
+                Intent usersearchIntent = new Intent(MapsActivity.this, SearchUserActivity.class);
+                startActivity(usersearchIntent);
         }
 
         drawerLayout.closeDrawers();
@@ -166,7 +173,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        gMapsHandler = new MapHandler(googleMap, mGPS, this, loginRepo.returnUser());
+        gMapsHandler = new MapHandler(googleMap, mGPS, this, loginRepo.returnUser(), this);
 
         new Thread(new Runnable() {
             public void run() {
@@ -183,7 +190,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                new Thread(new Runnable() {
+                    public void run() {
+                gMapsHandler.loadLocations(MapsActivity.this); //Get new markers from db.
+                    }}).start();
+                handler.postDelayed(this, 120000); //now is every 2 minutes
+            }
+        }, 120000); //Every 120000 ms (2 minutes)
+
     }
+
 
     /**
      * Checks For Permissions
@@ -192,32 +210,5 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      * </p>
      *
      */
-    public void checkForPermissions(){
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        //TODO: Handle user declining the permission prompt.
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-                } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
-                return;
-            }
-            // other 'case' lines to check for other
-            // permissions this app might request.
-        }
-    }
 
 }
