@@ -21,7 +21,7 @@ import (
 const (
 	dbURL       = "mongodb://test_user:test123@ds135726.mlab.com:35726/map_messages"
 	searchRange = 0.5
-	pwdSalt     = 23
+	pwdSalt     = 13
 )
 
 var startTime time.Time
@@ -193,7 +193,6 @@ func postUser(c *gin.Context) {
 
 	user.UserID = xid.New().String()
 	filter := bson.M{"username": user.UserName}
-
 
 	var foundUser User
 	err := client.Database("map_messages").Collection("Users").FindOne(context.TODO(), filter).Decode(&foundUser)
