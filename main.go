@@ -21,7 +21,7 @@ import (
 const (
 	dbURL       = "mongodb://test_user:test123@ds135726.mlab.com:35726/map_messages"
 	searchRange = 0.5
-	pwdSalt = 23
+	pwdSalt     = 23
 )
 
 var startTime time.Time
@@ -159,13 +159,13 @@ func getUserInfoByName(c *gin.Context) {
 	client := returnClient()
 
 	type UserName struct {
-		FullName string `json:"fullName" bson:"fullname"`
+		UserName string `json:"userName" bson:"username"`
 	}
 
 	var name UserName
 	c.BindJSON(&name)
 
-	filter := bson.M{"fullname": name.FullName}
+	filter := bson.M{"username": name.UserName}
 
 	type retUser struct {
 		FullName       string `json:"fullName"`
@@ -192,7 +192,7 @@ func postUser(c *gin.Context) {
 	c.BindJSON(&user)
 
 	user.UserID = xid.New().String()
-	filter := bson.M{"fullname": user.FullName}
+	filter := bson.M{"userName": user.UserName}
 
 	var foundUser User
 	err := client.Database("map_messages").Collection("Users").FindOne(context.TODO(), filter).Decode(&foundUser)
@@ -200,7 +200,7 @@ func postUser(c *gin.Context) {
 		println(err.Error())
 	}
 
-	if foundUser.FullName == user.FullName {
+	if foundUser.UserName == user.UserName {
 		c.Status(http.StatusBadRequest)
 	} else {
 		user.PassHash = hashAndSaltPassword(user.PassHash)
@@ -214,14 +214,14 @@ func postUser(c *gin.Context) {
 
 func userLogin(c *gin.Context) {
 	type LoginInfo struct {
-		Fullname string `json:"fullName"`
+		Username string `json:"userName"`
 		Password string `json:"password"`
 	}
 	var loginInfo LoginInfo
 	c.BindJSON(&loginInfo)
 
 	var user User
-	filter := bson.M{"fullname": user.FullName}
+	filter := bson.M{"userName": user.UserName}
 	err := client.Database("map_messages").Collection("Users").FindOne(context.TODO(), filter).Decode(&user)
 	if err != nil {
 		println(err.Error())
