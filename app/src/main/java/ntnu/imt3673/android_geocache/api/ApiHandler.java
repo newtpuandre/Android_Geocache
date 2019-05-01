@@ -4,17 +4,14 @@ import java.util.ArrayList;
 
 import ntnu.imt3673.android_geocache.api.model.Message;
 import ntnu.imt3673.android_geocache.api.model.MessageRequest;
-import ntnu.imt3673.android_geocache.api.model.TestData;
 import ntnu.imt3673.android_geocache.api.model.User;
 import ntnu.imt3673.android_geocache.api.model.loginRequest;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
-import retrofit2.http.GET;
 import retrofit2.http.POST;
 
 public class ApiHandler {
@@ -50,11 +47,7 @@ public class ApiHandler {
 
     public interface TaskService {
 
-        //Only for debug
-        @GET("/todos")
-        Call<ArrayList<TestData>> getTestData();
-
-        @GET("/User")
+        @POST("/api/userinfo")
         Call<User> fetchUserInfo();
 
         @POST("/api/login")
