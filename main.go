@@ -213,6 +213,7 @@ func postUser(c *gin.Context) {
 }
 
 func userLogin(c *gin.Context) {
+	client := returnClient()
 	type LoginInfo struct {
 		Username string `json:"userName"`
 		Password string `json:"password"`
