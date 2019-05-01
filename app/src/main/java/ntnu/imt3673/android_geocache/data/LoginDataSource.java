@@ -1,15 +1,15 @@
 package ntnu.imt3673.android_geocache.data;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import ntnu.imt3673.android_geocache.api.ApiHandler;
-import ntnu.imt3673.android_geocache.api.model.TestData;
 import ntnu.imt3673.android_geocache.api.model.User;
 import ntnu.imt3673.android_geocache.api.model.loginRequest;
 import ntnu.imt3673.android_geocache.data.model.LoggedInUser;
+import ntnu.imt3673.android_geocache.ui.login.LoginActivity;
 import retrofit2.Call;
 
 /**
@@ -19,35 +19,28 @@ public class LoginDataSource {
 
     public Result<LoggedInUser> login(final String username, final String password) {
 
-        final Boolean LoggedIn = true;
+        Boolean LoggedIn = false;
 
         ApiHandler.TaskService taskService = ApiHandler.createService(ApiHandler.TaskService.class);
         loginRequest tempuser = new loginRequest(username, password);
         Call<User> call = taskService.loginUser(tempuser);
-        User retUser;
+        User retUser = null;
         try {
-             retUser = call.execute().body();
-            Log.d("app1", "LoginData:" + retUser.toString());
+            retUser = call.execute().body();
+            if(retUser != null) {
+                LoggedIn = true;
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         if (LoggedIn) {
-            /*Call<ArrayList<TestData>> userInfo = taskService.getTestData();
-            ArrayList<TestData> userData = null;
-            try {
-                userData = userInfo.execute().body();
-                Log.d("app1", "userInfo" + data.toString());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }*/
-
-            LoggedInUser fakeUser = new LoggedInUser(java.util.UUID.randomUUID().toString(),
-                    "Test Testesen");
-
-            //fakeUser.updateCaches();
-            //fakeUser.updateDistance();
-            return new Result.Success<>(fakeUser);
+            Log.d("app1", "LoginData:" + retUser.toString());
+            LoggedInUser newUser = new LoggedInUser(retUser.getUserID(),
+                    retUser.getfullName());
+            newUser.updateCaches(retUser.getCachesFound());
+            newUser.updateDistance(retUser.getDistanceWalked());
+            return new Result.Success<>(newUser);
         } else {
             return new Result.Error(new IOException("Error logging in"));
         }
@@ -56,7 +49,6 @@ public class LoginDataSource {
     public Result<LoggedInUser> register(String name, String email, String password, String confirmPassword) {
         try {
             ApiHandler.TaskService taskService = ApiHandler.createService(ApiHandler.TaskService.class);
-            //TODO: Make sure password is hashed
             User tempuser = new User("", email, password, name, 0, 0);
             Call<Void> call = taskService.registerUser(tempuser);
             try {
@@ -65,7 +57,6 @@ public class LoginDataSource {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            Thread.sleep(1000);
 
             return login(email, password);
         } catch (Exception e) {
