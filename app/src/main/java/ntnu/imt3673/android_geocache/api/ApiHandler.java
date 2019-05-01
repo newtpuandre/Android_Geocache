@@ -6,6 +6,7 @@ import ntnu.imt3673.android_geocache.api.model.Message;
 import ntnu.imt3673.android_geocache.api.model.MessageRequest;
 import ntnu.imt3673.android_geocache.api.model.TestData;
 import ntnu.imt3673.android_geocache.api.model.User;
+import ntnu.imt3673.android_geocache.api.model.loginRequest;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
@@ -56,8 +57,8 @@ public class ApiHandler {
         @GET("/User")
         Call<User> fetchUserInfo();
 
-        @POST("/login")
-        Call<User> loginUser(@Body User LoginUser);
+        @POST("/api/login")
+        Call<User> loginUser(@Body loginRequest LoginUser);
 
         @POST("/api/user")
         Call<Void> registerUser(@Body User RegisterUser);
