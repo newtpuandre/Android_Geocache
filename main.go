@@ -15,11 +15,13 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const (
 	dbURL       = "mongodb://test_user:test123@ds135726.mlab.com:35726/map_messages"
 	searchRange = 0.5
+	pwdSalt = 9723
 )
 
 var startTime time.Time
@@ -87,31 +89,6 @@ func getMessages(c *gin.Context) {
 	}
 	
 	cursor.All(context.TODO(), &messages)
-
-	//dummy reply
-	/*messages := []Message{
-		Message{
-			MessageID: "TestMessage1",
-			Timestamp: time.Now().String(),
-			UserID:    "DummyUser",
-			Message:   "This is the first test message it has an imageURL",
-			ImageURL:  "https://images.pexels.com/photos/2156311/pexels-photo-2156311.jpeg",
-			Long:      messageRequest.Long,
-			Lat:       messageRequest.Lat,
-			MType:     0,
-		},
-		Message{
-			MessageID: "TestMessage2",
-			Timestamp: time.Now().String(),
-			UserID:    "UserDummy",
-			Message:   "This is the second test message it does NOT have an imageURL",
-			ImageURL:  "",
-			Long:      messageRequest.Long + 0.001,
-			Lat:       messageRequest.Lat + 0.001,
-			MType:     0,
-		},
-	}*/ 
-	//end of dummy reply
 	
 	var returnMessages []Message
 
@@ -228,13 +205,45 @@ func postUser(c *gin.Context) {
 	if(foundUser.FullName == user.FullName){
 		c.Status(http.StatusBadRequest)
 	}else{
+		user.PassHash = hashAndSaltPassword(user.PassHash)
 		_, err := client.Database("map_messages").Collection("Users").InsertOne(context.TODO(), user)
 		if err != nil {
 			log.Fatal(err)
 		}
-
 		c.Status(http.StatusOK)
 	}
+}
+
+func userLogin(c *gin.Context) {
+	type LoginInfo struct {
+		Fullname string `json:"fullName"`
+		Password string `json:"password"`
+	}
+	var loginInfo LoginInfo
+	c.BindJSON(&loginInfo)
+	
+	var user User
+	filter := bson.M{"fullname": user.FullName}
+	err := client.Database("map_messages").Collection("Users").FindOne(context.TODO(), filter).Decode(&user)
+	if err != nil {
+		println(err.Error())
+	} else {
+		err = bcrypt.CompareHashAndPassword([]byte(user.PassHash), []byte(loginInfo.Password))
+		if err != nil {
+			//wrong password
+			c.Status(http.StatusUnauthorized)
+		} else {
+			c.JSON(http.StatusAccepted, user)
+		}
+	}
+}
+
+func hashAndSaltPassword(pwd string) string {
+	hash, err := bcrypt.GenerateFromPassword([]byte(pwd), pwdSalt)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return string(hash)
 }
 
 /*
@@ -282,10 +291,11 @@ func main() {
 
 	api := router.Group("/api")
 	{
-		api.POST("/getmessages", getMessages) //fetch messages should return collection of available messages to user
-		api.POST("/message", postMessage)     //post a new message to db
-		api.GET("/user", getUserInfo)         //fetch user information
-		api.POST("/user", postUser)           //create new user account
+		api.POST("/getmessages", getMessages) 	//fetch messages should return collection of available messages to user
+		api.POST("/message", postMessage)     	//post a new message to db
+		api.GET("/user", getUserInfo)         	//fetch user information
+		api.POST("/user", postUser)           	//create new user account
+		api.POST("/login", userLogin)			//log in user
 	}
 
 	//Listens to environment declared port, using the subrouter handlers
