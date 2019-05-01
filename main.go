@@ -41,11 +41,11 @@ type Message struct {
 type User struct {
 	FullName string `json:"fullName" bson:"fullname"`
 	UserID   string `json:"userID" bson:"_id"`
-	UserName string `json:"userName"`
-	PassHash string `json:"passHash"`
+	UserName string `json:"userName" bson:"username"`
+	PassHash string `json:"passHash" bson:"passhash"`
 	//FriendIDs      []string `json:"friendIDs"`
-	CachesFound    int `json:"cachesFound"`
-	DistanceWalked int `json:"distanceWalked"`
+	CachesFound    int `json:"cachesFound" bson:"cachesfound"`
+	DistanceWalked int `json:"distanceWalked" bson:"distancewalked"`
 }
 
 type MessageRequest struct {
@@ -192,7 +192,7 @@ func postUser(c *gin.Context) {
 	c.BindJSON(&user)
 
 	user.UserID = xid.New().String()
-	filter := bson.M{"fullname": user.FullName}
+	filter := bson.M{"username": user.UserName}
 
 	var foundUser User
 	err := client.Database("map_messages").Collection("Users").FindOne(context.TODO(), filter).Decode(&foundUser)
@@ -200,7 +200,7 @@ func postUser(c *gin.Context) {
 		println(err.Error())
 	}
 
-	if foundUser.FullName == user.FullName {
+	if foundUser.UserName == user.UserName {
 		c.Status(http.StatusBadRequest)
 	} else {
 		user.PassHash = hashAndSaltPassword(user.PassHash)
@@ -241,6 +241,8 @@ func hashAndSaltPassword(pwd string) string {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	println("pwd hash: " + string(hash))
 	return string(hash)
 }
 
