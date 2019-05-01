@@ -21,7 +21,7 @@ public class ApiHandler {
 
 
     //Root URL
-    private static final String API_URL = "http://10.13.37.52:8080/";
+    private static final String API_URL = "https://androidgeocache.herokuapp.com/";
 
     private static Retrofit.Builder builder =
             new Retrofit.Builder()
