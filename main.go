@@ -178,7 +178,7 @@ func getUserInfoByName(c *gin.Context) {
 	var result retUser
 	err := client.Database("map_messages").Collection("Users").FindOne(context.TODO(), filter).Decode(&result)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	//return user
@@ -207,7 +207,7 @@ func postUser(c *gin.Context) {
 		user.PassHash = hashAndSaltPassword(user.PassHash)
 		_, err := client.Database("map_messages").Collection("Users").InsertOne(context.TODO(), user)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
 		c.Status(http.StatusOK)
 	}
