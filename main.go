@@ -292,7 +292,7 @@ func main() {
 	{
 		api.POST("/getmessages", getMessages) //fetch messages should return collection of available messages to user
 		api.POST("/message", postMessage)     //post a new message to db
-		api.GET("/user", getUserInfo)         //fetch user information
+		api.POST("/userinfo", getUserInfo)    //fetch user information
 		api.POST("/user", postUser)           //create new user account
 		api.POST("/login", userLogin)         //log in user
 	}
