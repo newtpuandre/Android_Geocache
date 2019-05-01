@@ -89,7 +89,17 @@ func getMessages(c *gin.Context) {
 		log.Fatal(err)
 	}
 
-	cursor.All(context.TODO(), &messages)
+	//cursor.All(context.TODO(), &messages)
+	for cursor.Next(context.TODO()) {
+		var elem Message
+		if err := cursor.Decode(&elem); err != nil {
+			log.Fatal(err)
+		}
+		
+
+		messages = append(messages, elem)
+		// do something with elem....
+	}
 
 	var returnMessages []Message
 
