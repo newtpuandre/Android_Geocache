@@ -16,17 +16,21 @@ public class LoggedInUserTest {
 
     @Test
     public void createObjectTest(){
-        LoggedInUser temp = new LoggedInUser("testUserId", "Andre testesen", 26, 26);
+        ArrayList<String> stringArr = new ArrayList<>();
+        stringArr.add("test");
+        LoggedInUser temp = new LoggedInUser("testUserId", "Andre testesen", 26, stringArr);
 
         assertEquals(temp.getUserId(), "testUserId");
         assertEquals(temp.getDisplayName(), "Andre testesen");
         assertEquals(temp.getDistanceWalked(), 26,0);
-        assertEquals(temp.getCachesFound(), "26");
+        assertEquals(temp.getCachesFound().size(), 1);
     }
 
     @Test
     public void updateDistanceTest(){
-        LoggedInUser temp = new LoggedInUser("testUserId", "Andre testesen", 26, 26);
+        ArrayList<String> stringArr = new ArrayList<>();
+        stringArr.add("test");
+        LoggedInUser temp = new LoggedInUser("testUserId", "Andre testesen", 26, stringArr);
         assertEquals(temp.getDistanceWalked(), 26, 0);
 
         temp.updateDistance(10);
@@ -35,11 +39,14 @@ public class LoggedInUserTest {
 
     @Test
     public void updateCachesTest(){
-        LoggedInUser temp = new LoggedInUser("testUserId", "Andre testesen", 26, 26);
-        assertEquals(temp.getCachesFound(), "26");
+        ArrayList<String> stringArr = new ArrayList<>();
+        stringArr.add("test");
+        LoggedInUser temp = new LoggedInUser("testUserId", "Andre testesen", 26, stringArr);
+        assertEquals(temp.getCachesFound().size(), 1);
 
-        temp.updateCaches(10);
-        assertEquals(temp.getCachesFound(), "36");
+        stringArr.add("test");
+        temp.setCaches(stringArr);
+        assertEquals(temp.getCachesFound().size(), 3);
     }
 
 }
