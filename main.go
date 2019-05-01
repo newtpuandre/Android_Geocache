@@ -21,7 +21,7 @@ import (
 const (
 	dbURL       = "mongodb://test_user:test123@ds135726.mlab.com:35726/map_messages"
 	searchRange = 0.5
-	pwdSalt = 9723
+	pwdSalt = 23
 )
 
 var startTime time.Time
