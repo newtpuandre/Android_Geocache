@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import ntnu.imt3673.android_geocache.api.ApiHandler;
 import ntnu.imt3673.android_geocache.api.model.TestData;
 import ntnu.imt3673.android_geocache.api.model.User;
+import ntnu.imt3673.android_geocache.api.model.loginRequest;
 import ntnu.imt3673.android_geocache.data.model.LoggedInUser;
 import retrofit2.Call;
 
@@ -20,15 +21,16 @@ public class LoginDataSource {
 
         final Boolean LoggedIn = true;
 
-        /*ApiHandler.TaskService taskService = ApiHandler.createService(ApiHandler.TaskService.class);
-        Call<ArrayList<TestData>> call = taskService.getTestData();
-        ArrayList<TestData> data = null;
+        ApiHandler.TaskService taskService = ApiHandler.createService(ApiHandler.TaskService.class);
+        loginRequest tempuser = new loginRequest(username, password);
+        Call<User> call = taskService.loginUser(tempuser);
+        User retUser;
         try {
-            data = call.execute().body();
-            Log.d("app1", "LoginData:" + data.toString());
+             retUser = call.execute().body();
+            Log.d("app1", "LoginData:" + retUser.toString());
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
 
         if (LoggedIn) {
             /*Call<ArrayList<TestData>> userInfo = taskService.getTestData();
