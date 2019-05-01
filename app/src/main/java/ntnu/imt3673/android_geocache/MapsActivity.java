@@ -33,7 +33,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     static final int SETTINGS_MENU = 1;
     static final int RESULT_LOGOUT = 10;
 
-
     private DrawerLayout drawerLayout;
     private MapHandler gMapsHandler;
 
@@ -42,7 +41,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public GoogleMap mMap;
     public GPSHandler mGPS;
 
-    private LoginRepository loginRepo;
+    public static LoginRepository loginRepo;
     private LoginDataSource loginData;
 
     private Handler handler;
@@ -93,7 +92,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
                 break;
             case SETTINGS_MENU:
-                //TODO: Only update stuff if things were changed.
                 switch(resultCode){
                     case RESULT_OK:
                         gMapsHandler.updateMarkers();
@@ -101,7 +99,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     case RESULT_LOGOUT:
                         loginRepo.logout();
                         Intent loginIntent = new Intent(this, LoginActivity.class);
-
                         //Destroy maps activity and start login activity
                         loginIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(loginIntent);

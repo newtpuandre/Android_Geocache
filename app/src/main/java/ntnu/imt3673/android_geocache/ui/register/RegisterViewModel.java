@@ -34,13 +34,12 @@ class RegisterViewModel extends ViewModel {
 
     void register(final String name, final String email, final String password, final String confirmPassword) {
 
-        // TODO register
         Result<LoggedInUser> result = loginRepository.register(name, email, password, confirmPassword);
         if (result instanceof Result.Success) {
             LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();
             loginResult.postValue(new LoginResult(new LoggedInUserView(data.getDisplayName())));
         } else {
-            loginResult.postValue(new LoginResult(R.string.login_failed));
+            loginResult.postValue(new LoginResult(R.string.register_failed));
         }
     }
 

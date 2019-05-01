@@ -54,7 +54,7 @@ public class AddMessageActivity extends AppCompatActivity {
                         public void run() {
                             ApiHandler.TaskService taskService = ApiHandler.createService(ApiHandler.TaskService.class);
                             LatLng temp = GPSHandler.getCurrentLocation();
-                            Message tempMsg = new Message("","","test", message.getText().toString(),
+                            Message tempMsg = new Message("","",MapsActivity.loginRepo.returnUser().getUserId(), message.getText().toString(),
                                 "test", temp.longitude, temp.latitude, 2);
                             Call<String> call = taskService.postMessage(tempMsg);
                             try {
@@ -66,8 +66,6 @@ public class AddMessageActivity extends AppCompatActivity {
                                 } else {
                                     addMessage(ret);
                                 }
-
-
                             } catch (IOException e) {
                                e.printStackTrace();
                             }
