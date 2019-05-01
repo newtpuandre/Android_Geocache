@@ -227,13 +227,18 @@ func userLogin(c *gin.Context) {
 	err := client.Database("map_messages").Collection("Users").FindOne(context.TODO(), filter).Decode(&user)
 	if err != nil {
 		println(err.Error())
+		c.Status(http.StatusUnauthorized)
 	} else {
+		if(user.UserName == loginInfo.Username){
 		err = bcrypt.CompareHashAndPassword([]byte(user.PassHash), []byte(loginInfo.Password))
-		if err != nil {
-			//wrong password
-			c.Status(http.StatusUnauthorized)
+			if err != nil {
+				//wrong password
+				c.Status(http.StatusUnauthorized)
+			} else {
+				c.JSON(http.StatusAccepted, user)
+			}
 		} else {
-			c.JSON(http.StatusAccepted, user)
+			c.Status(http.StatusUnauthorized)
 		}
 	}
 }
